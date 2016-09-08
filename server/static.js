@@ -11,14 +11,14 @@ module.exports = function (app, options = {}) {
   /**
    * Static folder
    */
-  app.use('/static', express.static(app.project.paths.build), { maxAge: '1d' })
+  app.use('/static', express.static(app.project.paths.build, { maxAge: '1d' }))
 
   /**
    * GET /robots.txt
    */
-  //app.use(robots(app.project.buildPath('robots.txt')));
+  app.use(robots(app.project.buildPath('robots.txt')));
 
   if (options.dev && app.project) {
-
+    require('../project/src/dev')(app, options)
   }
 }

@@ -22,9 +22,8 @@ module.exports = function buildConfig(environment = 'development', options = {})
     output: {
       path: options.outputPath || join(process.cwd(), 'build'),
       filename: '[name].js',
-      libraryTarget: 'umd',
       // public path tells our assets which path they will be served from
-      publicPath: options.publicPath || '/',
+      publicPath: options.publicPath || '/static/',
     },
 
     target: options.target || 'web',
