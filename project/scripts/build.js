@@ -23,7 +23,7 @@ export function command (commander) {
     })
 }
 
-function runWebpackBuild(target, argv = {}) {
+export function runWebpackBuild(target, argv = {}) {
   const environment = argv.env || 'development'
   const config = target === 'node'
     ? require('../config/webpack/node')(environment, argv)

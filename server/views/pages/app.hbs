@@ -17,8 +17,6 @@
     <meta name="twitter:image" content="{{meta.image}}" />
     <link rel="shortcut icon" type="image/png" href="/static/images/favicon.ico.png"/>
     <title>{{meta.title}}</title>
-
-    {{ webpackHead }}
   </head>
   <body>
     {{> sprite}}
@@ -29,8 +27,7 @@
         window.__INITIAL_STATE__ = {{{initialState}}}
     </script>
 
-    {{ webpackFoot }}
-
+    <script type="text/javascript" src="/static/bundle.js"></script>
     {{> google_analytics}}
   </body>
 </html>

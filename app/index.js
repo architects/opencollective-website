@@ -4,7 +4,7 @@ import { ReduxRouter } from 'redux-router'
 import { Provider } from 'react-redux'
 
 export const App = (props = {}) => {
-  const { store } = props.store
+  const { store } = props
 
   return (
     <Provider store={store}>

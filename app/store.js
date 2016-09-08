@@ -1,7 +1,6 @@
 import { createStore, applyMiddleware, compose } from 'redux'
 import createLogger from 'redux-logger'
 import thunk from 'redux-thunk'
-import { reduxReactRouter } from 'redux-router'
 import reducers from './reducers'
 import hydrate from './actions/session/hydrate'
 import defaults from 'lodash/defaults'
@@ -34,7 +33,7 @@ export function create (options = {}) {
     initialState: defaultInitialState,
   })
 
-  const initialState = options.initialState
+  const { reduxReactRouter, match, initialState } = options
 
   const middlewares = [
     thunk,
@@ -79,19 +78,12 @@ export function create (options = {}) {
 
   Object.assign(store, {
     hydrate (withState = {}) {
-      store.dispatch(hydrate(withState))
+      this.dispatch(hydrate(withState))
       return store
     },
-    respond (url, next, finish, match) {
-      store.dispatch(match(url, (error, redirectLocation, routerState) => {
-        if (error) {
-          next(err);
-        } else if (!routerState) { // 404
-          next();
-        } else {
-          finish(store)
-        }
-      }))
+    respond (url, handler) {
+      const result = match(url, handler)
+      this.dispatch(result)
     }
   })
 

@@ -1,3 +1,5 @@
+import { runWebpackBuild } from './build'
+
 export function command (commander) {
   commander
     .command(`start [platform]`)
@@ -16,11 +18,11 @@ export function command (commander) {
       try {
         rm(`${process.cwd()}/node_modules/redux-router/.babelrc`)
       } catch (e) {
-        
+
       }
 
       if (argv.env === 'production') {
-        require('child_process').spawn(
+        require('child_process').spawnSync(
           'node', ['server'], {
             terminal: true,
             colors: true,
@@ -28,7 +30,12 @@ export function command (commander) {
           }
         )
       } else {
-        startDevServer(argv)
+        msg('Generating SSR Build', '100')
+        runWebpackBuild('node', argv.env)
+          .then(() => {
+            msg('Starting dev server', 'sunny')
+            startDevServer(argv)
+          })
       }
     })
 }

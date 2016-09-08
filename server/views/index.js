@@ -24,14 +24,14 @@ module.exports = (app) => {
   hbs.registerHelper("cachebust", bustedHelper);
 
   hbs.registerHelper('webpackHead', () => {
-    return new hbs.SafeString`
+    return `
       <!-- WEBPACK HEAD CONTENT -->
     `
   })
 
-  hbs.registerHelper('webpackFoot', () => {
-    return new hbs.SafeString`
-      <!-- WEBPACK BODY CONTENT -->
+  hbs.registerHelper('webpackHead', () => {
+    return `
+      <!-- WEBPACK HEAD CONTENT -->
     `
   })
 

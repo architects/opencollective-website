@@ -11,7 +11,7 @@ module.exports = function (app, options = {}) {
   /**
    * Static folder
    */
-  //app.use('/static', express.static(app.project.paths.build), { maxAge: '1d' })
+  app.use('/static', express.static(app.project.paths.build), { maxAge: '1d' })
 
   /**
    * GET /robots.txt
