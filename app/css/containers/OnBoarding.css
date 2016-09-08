@@ -1,0 +1,464 @@
+/* So .OnBoarding can have 100% height */
+#content
+{
+  height: 100%; 
+}
+
+/**
+* Container
+*/
+
+.OnBoarding
+{
+  font-family: Montserrat, sans-serif;
+  background-image: url(../images/onboarding-bg.svg);
+  background-repeat: no-repeat;
+  background-position: center 30px;
+  background-size: 840px 600px;
+  min-height: 100%;
+
+  &.-registering
+  {
+    background-image: none;
+    background-color: #f5f6f7;
+  }
+}
+
+/**
+* Components
+*/
+
+.OnBoardingHeader
+{
+  padding: 30px;
+
+  .-brand
+  {
+    display: inline-block;
+  }
+
+  .-nav
+  {
+    float: right;
+
+    a 
+    {
+      padding: 7px 20px 6px 20px;
+      font-size: 10px;
+      text-transform: uppercase;
+      color: #aab0b3;
+      letter-spacing: 1px;
+      font-weight: bold;
+
+      &:hover
+      {
+        opacity: .8;
+      }
+    }
+
+    a:first-child
+    {
+      border: 2px solid #aab0b3;
+      border-radius: 100px;
+      margin-right: 10px;
+    }
+
+    a:nth-child(2)
+    {
+      color: #919699;
+      font-size: 11px;
+    }
+
+    img
+    {
+      width: 24px;
+      height: 24px;
+      vertical-align: middle;
+      margin-right: 10px;
+      border-radius: 100%;
+      overflow: hidden;
+    }
+
+    span
+    {
+      color: white;
+      font-family: Lato;
+      font-weight: bold;
+      letter-spacing: .5px;
+      vertical-align: middle;
+    }
+  }
+}
+
+.OnBoardingStepHeading
+{
+  font-size: 28px;
+  font-weight: bold;
+  color: #494b4d;
+  width: 100%;
+  text-align: center;
+  line-height: 1.2;
+  font-weight: bold;  
+  padding: 0 20px;
+  box-sizing: border-box;
+  margin-top: 40px;
+  strong
+  {
+    color: #919699;
+    letter-spacing: 1px;
+  }
+  div:nth-child(2)
+  {
+    margin: 0 auto;
+    margin-top: 15px;
+    text-align: center;
+    
+    font-size: 15px;
+    line-height: 1.8;
+    color: #616466;
+    font-family: Lato, sans-serif;
+    font-weight: lighter;
+  }
+}
+
+.OnBoardingStepButton
+{
+  color: white;
+}
+
+/**
+* Step components
+*/
+
+.OnBoardingHero
+{
+  margin-top: 160px;
+
+  .-title
+  {
+    font-size: 33px;
+    font-weight: bold;
+    color: #494b4d;
+    width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    line-height: 1.3;
+    letter-spacing: -1px;
+
+    strong
+    {
+      color: #46b0ed;
+    }
+  }
+
+  .-subtitle
+  {
+    margin: 0 auto;
+    margin-top: 25px;
+    text-align: center;
+    font-size: 21px;
+    color: #616466;
+    font-family: Montserratlight, sans-serif;
+    font-weight: lighter;
+  }
+
+  .-button-container
+  {
+    
+    height: 56px;
+    border-radius: 100px;
+    /*background-color: #75cc1f;*/
+    color: white;
+    text-align: center;
+    margin: 0 auto;
+    margin-top: 80px;
+  }
+
+  .-requirements
+  {
+    font-family: Lato;
+    color: #797d80;
+    font-size: 12px;
+    width: 280px;
+    text-align: center;
+    margin: 0 auto;
+    margin-top: 20px;
+  }
+}
+
+.OnBoardingStepConnectGithub
+{
+  margin: 0 auto;
+  margin-top: 220px;
+  max-width: 768px;
+}
+
+.OnBoardingStepPickRepository
+{
+  margin: 0 auto;
+  max-width: 768px;
+  max-width: 600px; 
+  padding-bottom: 40px;
+}
+
+.OnBoardingStepPickCoreContributors
+{
+  margin: 0 auto;
+  max-width: 768px;
+  padding-bottom: 40px;
+}
+
+.OnBoardingStepCreate
+{
+  padding-bottom: 40px;
+
+  .OnBoardingStepCreate-form-container
+  {
+    max-width: 660px;
+    margin: 0 auto;
+    margin-top: 60px;
+
+    .flex-column
+    {
+      /*margin-right: 20px;*/
+      padding: 0 20px;
+    }
+
+    .OnBoardingStepCreate-imagepicker-cont {
+      padding-top: 32px;
+      padding-top: 2rem;
+      padding-bottom: 24px;
+      padding-bottom: 1.75rem;
+    }
+
+    .OnBoardingStepCreate-label
+    {
+      font-family: Lato;
+      font-weight: bold;
+      font-size: 15px;
+      color: #797d80;
+      padding-bottom: 10px;
+    }
+
+    .OnBoardingStepCreate-tos
+    {
+      font-family: Lato;
+      font-size: 15px;
+      font-weight: bold;
+      padding: 0 20px;
+
+      .Checkbox, span a, span span
+      {
+        vertical-align: middle;
+      }
+
+      span
+      {
+        margin-left: 5px;
+        color: #aab0b3;
+      }
+    }
+  }
+}
+
+.OnBoardingStepThankYou
+{
+  margin: 0 auto;
+  max-width: 768px;
+  text-align: center;
+
+  img 
+  {
+    margin-bottom: 30px;
+    margin-top: 100px;
+  }
+
+  .ShareIcon
+  {
+    font-size: 36px;
+    margin: 0 5px;
+  }
+}
+
+
+.OnBoardingButton
+{
+  font-family: Montserrat;
+  outline: 0;
+  background-color: #75cc1f;
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-block;
+  line-height: 18px;
+  height: auto;
+  vertical-align: middle;
+  -webkit-appearance: none;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 19.2px 32px;
+  border-radius: 28px;
+  text-transform: uppercase;
+  min-width: 280px;
+  box-sizing: border-box; 
+  letter-spacing: 1px;
+
+  &:not(.disabled):hover
+  {
+    opacity: .8;
+  }
+
+  &.disabled
+  {
+    background: #dde1e4;
+    cursor: default;
+  }
+}
+
+/**
+* Tweaks for general purpose components
+*/
+
+.OnBoarding
+{
+  .ImagePicker-container
+  {
+    width: 250px;
+    min-height: 230px;
+    height: 100%;
+
+    .ImagePicker-label
+    {
+      font-weight: bold;
+      font-family: Lato;
+      font-size: 16px;
+      line-height: 1.3;
+      color: #797d80;
+      width: 200px;
+    }
+    
+    .ImagePicker-dot-list
+    {
+      bottom: 30px;
+
+      li:after
+      {
+        width: 12px;
+        height: 12px;
+      }
+    }
+
+    .ImagePicker-loader > div
+    {
+      margin: 105px auto;
+      font-size: 20px;
+    }
+
+    .ImagePicker-preview
+    {
+      width: 100px;
+      height: 100px;
+      background: none;
+      
+      img
+      {
+        width: 100px;
+        height: 100px;
+      }
+    }
+    
+    .ImagePicker-next, 
+    .ImagePicker-prev 
+    {
+      height: 18px;
+    }
+  }
+
+  .Notification {
+    position: relative;
+  }
+}
+
+/**
+* Responsiveness
+*/
+
+@media (--large-viewport) {
+  .OnBoardingHero {
+    .-title {
+      font-size: 44px;
+      width: 840px;
+    }
+  }
+}
+
+@media (--medium-viewport) {
+  .OnBoardingHeader {
+    .-brand svg:nth-child(2) {
+      display: none;
+    }
+  }
+  .OnBoardingHero {
+    margin-top: 140px;
+    .-title {
+      font-size: 22px;
+      width: 380px;
+    }
+    .-subtitle {
+      font-size: 16px;
+    }
+  }
+  .OnBoardingStepHeading {
+    font-size: 24px;
+    div:nth-child(2) {
+      width: auto;
+    }
+  }
+  .OnBoardingStepCreate {
+    .OnBoardingStepCreate-tos {
+      margin-top: 10px;
+    }
+    .OnBoardingStepCreate-form-container {
+      margin-top: 0;
+    }
+  }
+}
+
+@media (--small-viewport) {
+  .-brand {
+    svg:nth-child(2) {
+      display: none;
+    }
+  }
+  .OnBoardingHeader {
+    .-nav {
+      a {
+        padding: 6px 14px 5px 14px;
+      }
+      a:nth-child(1) {
+        margin-right: 5px;
+        font-size: 7px;
+      }
+      a:nth-child(2) {
+        font-size: 8px;
+      }
+    }
+  }
+  .OnBoardingHero {
+    margin-top: 100px;
+    .-title {
+      font-size: 20px;
+      width: auto;
+    }
+    .-subtitle {
+      font-size: 14px;
+      width: auto;
+    }
+    .-requirements {
+      width: auto;
+    }
+  }
+  .ContributorPickerItem input {
+    font-size: 13px;
+  }
+}

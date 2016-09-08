@@ -7,8 +7,8 @@ import config from 'config';
 import { renderToString } from 'react-dom/server';
 
 import { get } from '../lib/api';
-import Widget from '../../frontend/src/components/Widget';
-import i18n from '../../frontend/src/lib/i18n';
+import Widget from '../../app/components/Widget';
+import i18n from '../../app/lib/i18n';
 
 /**
  * Show the widget of a collective

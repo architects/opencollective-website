@@ -1,0 +1,20 @@
+.Subscriptions {
+  background-color: rgb(245, 246, 247);
+  .LoginTopBar {
+    background-color: white;
+  }
+  .block-container {
+    box-sizing: border-box;
+    width: 800px;
+    background-color: #ffffff;
+    margin: 30px auto;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 900px) {
+  .Subscriptions .block-container {
+    width: auto;
+    margin: 15px;
+  }
+}

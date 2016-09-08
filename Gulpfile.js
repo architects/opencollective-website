@@ -5,7 +5,7 @@ const changed = require('gulp-changed');
 const svgSprite = require('gulp-svg-sprite');
 
 const SRC_DIR = 'frontend/src';
-const DIST_DIR = 'frontend/dist';
+const DIST_DIR = 'build';
 
 process.env.NODE_CONFIG_DIR = "./server/config";
 const config = require('config');
@@ -39,7 +39,7 @@ gulp.task('purge', (cb) => {
 gulp.task('build', ['build:assets','build:css', 'purge']);
 
 /**
- * Copy all static assets from ./frontend/src/assets/* to ./frontend/dist/
+ * Copy all static assets from ./app/assets/* to ./build/
  * (includes /images, /fonts, /robots.txt)
  */
 gulp.task('build:assets', () => {

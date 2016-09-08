@@ -1,4 +1,10 @@
 // You can also omit the eslint-config- and it will be automatically assumed by ESLint:
 {
-    "extends": "opencollective"
+    "extends": "opencollective",
+    "rules": {
+      "no-unused-vars": ["error", {
+        "vars": "local",
+        "args": "none",
+      }],
+    }
 }

@@ -1,3 +1,4 @@
 {
-  "presets": ["opencollective"]
+  "presets": ["opencollective"],
+  "only": ["project", "server", "scripts", "test"]
 }

@@ -1,0 +1,67 @@
+.RepositoryPickerItem
+{
+	width: 540px;
+	width: 90%;
+	height: 90px;
+	border-radius: 5px;
+	background-color: #ffffff;
+	box-shadow: 0 1px 3px 0 rgba(45, 77, 97, 0.3);
+	margin: 0 auto;
+	margin-top: 15px;
+	padding: 18px 20px;
+	padding-bottom: 0;
+	box-sizing: border-box;
+	font-family: Lato;
+	border: solid 2px white;
+	cursor: pointer;
+
+	&:first-child
+	{
+		margin-top: 0;
+	}
+
+	&:last-child
+	{
+		margin-bottom: 20px;
+	}
+
+	&.RepositoryPickerItem--selected
+	{
+		box-shadow: 0 1px 3px 0 rgba(45, 77, 97, 0.3);
+		border: solid 2px #75cc1f;
+	}
+
+	.-title
+	{
+		font-weight: bold;
+		font-size: 16px;
+		color: #494b4d;
+	}
+
+	.-stars
+	{
+		float: right;
+		color: #bbc1c4;
+		font-size: 14px;
+		
+		img, span
+		{
+			vertical-align: middle;
+		}
+
+		img
+		{
+			margin-right: 6px;
+		}
+	}
+
+	.-description
+	{
+		font-size: 16px;
+		color: #797d80;
+		margin-top: 5px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+}
