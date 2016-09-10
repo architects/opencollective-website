@@ -1,32 +1,25 @@
-const join = require('path').join
+const plugins = require('./plugins')
 const compact = require('lodash/compact')
-const webpack = require('webpack')
-const { ProvidePlugin, EnvironmentPlugin } = webpack
-const {StatsWriterPlugin} = require('webpack-stats-plugin')
-const CopyPlugin = require('copy-webpack-plugin')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
-const babelConfig = {
-  babelrc: false,
-  cacheDirectory: true,
-  presets: ["es2015-webpack", "stage-0", "react", "react-hmre"].map(i => require.resolve(`babel-preset-${i}`)),
+const {
+  ASSETS_PATH,
+  NODE_MODULES,
+  OUTPUT_PATH,
+  PROJECT_ROOT,
+  SOURCE_PATH
+} = require('paths')
 
-  plugins: [
-    "add-module-exports",
-    "lodash"
-  ]
+const imageOptimizations = {
+  progressive:true,
+  optimizationLevel: 7,
+  interlaced: false,
+  pngquant:{
+    quality: "65-90",
+    speed: 4
+  }
 }
 
 module.exports = function(environment, options) {
-  return buildConfig(environment, options)
-}
-
-/**
- * @param {Array} options.exposeVars - a list of ENV vars webpack can safely expose
- * @param {String} options.outputPath - where to store the output
- * @param {String} options.publicPath - the base URL assets are served from e.g. /static/
- */
-function buildConfig(environment = process.env.NODE_ENV || 'development', options = {}) {
   options.env = environment
 
   const config = generateBase(options)
@@ -42,9 +35,10 @@ function buildConfig(environment = process.env.NODE_ENV || 'development', option
 
 function generateBase(options = {}) {
   return {
-    context: process.cwd(),
+    context: PROJECT_ROOT,
 
     devtool: 'eval',
+
     target: 'web',
 
     cache: true,
@@ -53,33 +47,28 @@ function generateBase(options = {}) {
       bundle: ['./frontend/src/index.web.js']
     },
 
-    node: {
-      console: true
-    },
-
     output: {
-      path: options.outputPath || join(process.cwd(), 'frontend', 'dist'),
+      path: OUTPUT_PATH,
       filename: '[name].js',
       // public path tells our assets which path they will be served from
       publicPath: options.publicPath || '/static/'
     },
 
-    externals: [],
-
     plugins: [
-      new ProvidePlugin({
+      new plugins.ProvidePlugin({
         Promise: 'bluebird',
         fetch: 'exports?self.fetch!whatwg-fetch'
       }),
 
-      new CopyPlugin([{
-        from: join(process.cwd(), 'frontend/src/assets')
+      new plugins.CopyPlugin([{
+        from: ASSETS_PATH
       }]),
 
-      exposeEnvironmentVarsPlugin([
-        'NODE_ENV',
-        ...(options.exposeVars || [])
-      ])
+      new plugins.DefinePlugin({
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+        '__SERVER__': false,
+        '__BROWSER__': true
+      })
     ],
 
     module: {
@@ -93,7 +82,7 @@ function generateBase(options = {}) {
         test: /\.(jpg|png|gif)$/,
         loaders: [
           'file-loader',
-          'image-webpack?{progressive:true, optimizationLevel: 7, interlaced: false, pngquant:{quality: "65-90", speed: 4}}'
+          'image-webpack?}'
         ]
       }, {
         test: /\.json$/,
@@ -110,9 +99,8 @@ function generateBase(options = {}) {
       },
 
       modules: [
-        join(process.cwd(), 'frontend', 'src'),
-        // normal commonjs behavior e.g. require('react')
-        join(process.cwd(), 'node_modules')
+        SOURCE_PATH,
+        NODE_MODULES
       ],
 
       mainFields: [
@@ -154,7 +142,7 @@ function addStyleLoader(config, options = {}) {
     ]
   }
 
-  const styleExtract = new ExtractTextPlugin('[name].css')
+  const styleExtract = new plugins.ExtractTextPlugin('[name].css')
 
   config.module.loaders.push({
     test: /\.css$/,
@@ -165,9 +153,7 @@ function addStyleLoader(config, options = {}) {
   }, {
     test: /\.css$/,
     loader: 'style!css',
-    include:[
-      join(process.cwd(), 'node_modules')
-    ]
+    include:[NODE_MODULES]
   })
 
   config.plugins.push( styleExtract )
@@ -177,14 +163,23 @@ function addBabelLoader(config, options = {}) {
   config.module.loaders.unshift({
     test: /\.js$/,
     loader: 'babel',
-    query: babelConfig,
+
+    query: {
+      babelrc: false,
+      cacheDirectory: true,
+      presets: ["es2015-webpack", "stage-0", "react", "react-hmre"],
+      plugins: [
+        "add-module-exports",
+        "lodash"
+      ]
+    },
+
     exclude: [
       /node_modules/,
       /dist/
     ],
-    include: [
-      join(process.cwd(), 'frontend', 'src')
-    ]
+
+    include: [SOURCE_PATH]
   })
 }
 
@@ -196,14 +191,14 @@ function addHotModuleReloading(config) {
   )
 
   config.plugins.push(
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin()
+    new plugins.HotModuleReplacementPlugin(),
+    new plugins.NoErrorsPlugin(),
   )
 }
 
 function addManifestGenerator(config, filename) {
   config.plugins.push(
-    new StatsWriterPlugin({
+    new plugins.StatsWriterPlugin({
       filename,
       fields: [
         'assetsByChunkName',
@@ -231,7 +226,7 @@ function addStatsPlugin(config, fields) {
     'children'
   ]
 
-  config.plugins.push(new StatsWriterPlugin({
+  config.plugins.push(new plugins.StatsWriterPlugin({
     // saves relative to the output path
     filename: 'stats.web.development.json',
     fields: fields || defaultFields
@@ -250,11 +245,4 @@ function normalize (custom = {}) {
   }
 
   return custom
-}
-
-function exposeEnvironmentVarsPlugin(variableNames) {
-    return new EnvironmentPlugin([
-      'NODE_ENV',
-      ...variableNames
-    ])
 }
