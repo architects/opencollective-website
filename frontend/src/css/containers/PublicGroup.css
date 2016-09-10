@@ -71,7 +71,7 @@
 
 /* WHY JOIN */
 .PublicGroup-image-placeholder {
-  background: url(../assets/images/media-placeholder.svg) no-repeat;
+  background: url(~assetsimages/media-placeholder.svg) no-repeat;
   background-position: center center;
   width: 300px;
   height: 300px;
@@ -207,19 +207,19 @@
 .PublicGroupSignupV2 {
   .-name {
     .Field {
-      background-image: url(../assets/images/user-icon.svg);
+      background-image: url(~assetsimages/user-icon.svg);
     }
   }
   .-website {
     .Field {
-      background-image: url(../assets/images/link-icon.svg);
+      background-image: url(~assetsimages/link-icon.svg);
     }
   }
   .-twitter {
     .Field {
       background-size: 20px;
       background-position: 8px center;
-      background-image: url(../assets/images/twitter-icon.svg);
+      background-image: url(~assetsimages/twitter-icon.svg);
     }
   }
 }
