@@ -1,11 +1,15 @@
-const { join, relative } = require('path')
+if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+  require('dotenv').load()
+}
+
 const env = process.env
-const project = join(__dirname, '..')
+const project = __dirname
+const { join, relative } = require('path')
 const frontend = env.FRONTEND_ROOT || join(project, 'frontend')
 const server = env.SERVER_ROOT || join(project, 'server')
 const bundleFile = env.BUNDLE_FILE || 'server.bundle.js'
 
-// Provides a more concise way of referring to paths
+// Provides a more concise way of referring to within the project
 const paths = {
   cwd: process.cwd(),
 

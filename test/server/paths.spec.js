@@ -1,6 +1,6 @@
-import paths from '../../../webpack/paths' // eslint-disable-line
 import expect from 'expect';
 
+const paths = require('../../paths')
 const PROJECT_ROOT = process.cwd()
 
 describe('Paths Configuration', () => {
