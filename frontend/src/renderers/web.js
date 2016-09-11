@@ -6,7 +6,7 @@ import initialRender from '../actions/app/initial_render';
 
 export function render(store, mountNode) {
   const rootComponent = (
-    <Provider store={store}>
+    <Provider store={store} key='provider'>
       <ReduxRouter/>
     </Provider>
   );
