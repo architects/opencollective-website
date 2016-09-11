@@ -1,3 +1,4 @@
+const paths = require('../paths')
 const resolvePaths = (...paths) => paths.map(require.resolve)
 const webpack = require('webpack')
 
@@ -10,8 +11,9 @@ module.exports = {
   entry: {
     bundle: [
       './server/src/global',
-      './frontend/src/index.node.js'
-    ]
+    ],
+
+    server:
   },
 
   /**
@@ -123,4 +125,3 @@ const babelConfig = () => ({
     sourcePath
   ]
 })
-

@@ -1,3 +1,4 @@
+const paths = require('../paths')
 const plugins = require('./plugins')
 const compact = require('lodash/compact')
 
@@ -6,7 +7,7 @@ const {
   NODE_MODULES,
   OUTPUT_PATH,
   PROJECT_ROOT,
-  SOURCE_PATH
+  SOURCE_PATH,
 } = require('paths')
 
 const imageOptimizations = {
@@ -15,8 +16,8 @@ const imageOptimizations = {
   interlaced: false,
   pngquant:{
     quality: "65-90",
-    speed: 4
-  }
+    speed: 4,
+  },
 }
 
 module.exports = function(environment, options) {
@@ -44,31 +45,31 @@ function generateBase(options = {}) {
     cache: true,
 
     entry: {
-      bundle: ['./frontend/src/index.web.js']
+      bundle: ['./frontend/src/index.web.js'],
     },
 
     output: {
       path: OUTPUT_PATH,
       filename: '[name].js',
       // public path tells our assets which path they will be served from
-      publicPath: options.publicPath || '/static/'
+      publicPath: options.publicPath || '/static/',
     },
 
     plugins: [
       new plugins.ProvidePlugin({
         Promise: 'bluebird',
-        fetch: 'exports?self.fetch!whatwg-fetch'
+        fetch: 'exports?self.fetch!whatwg-fetch',
       }),
 
       new plugins.CopyPlugin([{
-        from: ASSETS_PATH
+        from: ASSETS_PATH,
       }]),
 
       new plugins.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
         '__SERVER__': false,
-        '__BROWSER__': true
-      })
+        '__BROWSER__': true,
+      }),
     ],
 
     module: {
@@ -77,37 +78,37 @@ function generateBase(options = {}) {
 
       loaders: [ {
         test: /\.(eot|svg|ttf|woff|woff2)$/,
-        loader: 'file-loader'
+        loader: 'file-loader',
       }, {
         test: /\.(jpg|png|gif)$/,
         loaders: [
           'file-loader',
-          'image-webpack?}'
-        ]
+          'image-webpack?}',
+        ],
       }, {
         test: /\.json$/,
-        loader: 'json'
+        loader: 'json',
       }, {
         test: /numbro\/numbro/,
-        loader: 'imports?require=>false'
-      }]
+        loader: 'imports?require=>false',
+      }],
     },
 
     resolve: {
       alias: {
-        'joi': 'joi-browser'
+        'joi': 'joi-browser',
       },
 
       modules: [
         SOURCE_PATH,
-        NODE_MODULES
+        NODE_MODULES,
       ],
 
       mainFields: [
         'jsnext:main',
-        'main'
-      ]
-    }
+        'main',
+      ],
+    },
   }
 }
 
@@ -138,7 +139,7 @@ function addStyleLoader(config, options = {}) {
     return [
       cssNext,
       cssImport,
-      cssNested
+      cssNested,
     ]
   }
 
@@ -148,12 +149,12 @@ function addStyleLoader(config, options = {}) {
     test: /\.css$/,
     loader: styleExtract.extract(['css','postcss']) ,
     exclude:[
-      /node_modules/
-    ]
+      /node_modules/,
+    ],
   }, {
     test: /\.css$/,
     loader: 'style!css',
-    include:[NODE_MODULES]
+    include:[NODE_MODULES],
   })
 
   config.plugins.push( styleExtract )
@@ -170,16 +171,16 @@ function addBabelLoader(config, options = {}) {
       presets: ["es2015-webpack", "stage-0", "react", "react-hmre"],
       plugins: [
         "add-module-exports",
-        "lodash"
-      ]
+        "lodash",
+      ],
     },
 
     exclude: [
       /node_modules/,
-      /dist/
+      /dist/,
     ],
 
-    include: [SOURCE_PATH]
+    include: [SOURCE_PATH],
   })
 }
 
@@ -204,8 +205,8 @@ function addManifestGenerator(config, filename) {
         'assetsByChunkName',
         'hash',
         'version',
-        'assets'
-      ]
+        'assets',
+      ],
     })
   )
 }
@@ -223,13 +224,13 @@ function addStatsPlugin(config, fields) {
     'chunks',
     'modules',
     'filteredModules',
-    'children'
+    'children',
   ]
 
   config.plugins.push(new plugins.StatsWriterPlugin({
     // saves relative to the output path
     filename: 'stats.web.development.json',
-    fields: fields || defaultFields
+    fields: fields || defaultFields,
   }))
 }
 
