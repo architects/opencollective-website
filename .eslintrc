@@ -19,6 +19,6 @@
         "args": "none",
       }],
 
-      "comma-dangle": [2, 'always-multiline']
+      // "comma-dangle": [2, 'always-multiline']
     }
 }
