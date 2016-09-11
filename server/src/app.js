@@ -17,6 +17,8 @@ export function setup(app = express()) {
   app.locals.version = pkg.version;
   app.locals.SHOW_GA = (process.env.NODE_ENV === 'production');
 
+  app.set('projectPaths', require('../../paths'))
+
   app.set('trust proxy', 1) // trust first proxy for https cookies
 
   /**
@@ -43,7 +45,7 @@ export function setup(app = express()) {
     // TODO this should redirect to a 404 page so that window location is changed
     return next({
       code: 404,
-      message: 'We can\'t find that page.'
+      message: 'We can\'t find that page.',
     });
   });
 
@@ -67,8 +69,8 @@ export function setup(app = express()) {
       message: process.env.NODE_ENV === 'production' ? 'We couldn\'t find that page :(' : `Error ${err.code}: ${err.message}`,
       stack: process.env.NODE_ENV === 'production' ? '' : err.stack,
       options: {
-        showGA: config.GoogleAnalytics.active
-      }
+        showGA: config.GoogleAnalytics.active,
+      },
     });
   });
 
@@ -90,4 +92,4 @@ export function start(app, options = {}) {
   })
 }
 
-export default setup()
+export default setup
