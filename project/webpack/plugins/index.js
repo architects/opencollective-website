@@ -3,6 +3,9 @@ import * as contrib from './contrib'
 import mapValues from 'lodash/mapValues'
 
 export const helpers = {
+  core,
+  contrib,
+
   assetManifest(options = {}) {
     return new contrib.AssetManifestPlugin({
       output: `${options.prefix}${options.name}-manifest.json`
@@ -21,3 +24,5 @@ export const helpers = {
     return new core.ProvidePlugin(freeModules)
   }
 }
+
+export default helpers
