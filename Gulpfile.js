@@ -21,9 +21,9 @@ gulp.task('purge', (cb) => {
     headers: {
       'X-Auth-Email': config.cloudflare.email,
       'X-Auth-Key': config.cloudflare.key,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     },
-    body: JSON.stringify({'purge_everything': true}),
+    body: JSON.stringify({'purge_everything': true})
   }
   request(options, (err, res, body) => {
     if (err) return cb(JSON.stringify(err));
@@ -33,39 +33,7 @@ gulp.task('purge', (cb) => {
   });
 });
 
-gulp.task('build', ['build:svg', 'webpack:node', 'webpack:web'])
-
-gulp.task('webpack:web', (callback) => {
-  const webpack = require('webpack')
-
-  const config = require('./webpack/config.web')(process.env.NODE_ENV || 'development', {
-    hot: false,
-  })
-
-  const output = require('./server/src/utils/webpack-helpers').outputCompilerStats
-
-  webpack(config, (err, stats) => {
-    if (err) {
-      callback(err)
-    } else {
-      output(stats, () => callback(), (...args) => gutil.log(...args))
-    }
-  })
-})
-
-gulp.task('webpack:node', (callback) =>  {
-  const webpack = require('webpack')
-  const config = require('./webpack/config.node')
-  const output = require('./server/src/utils/webpack-helpers').outputCompilerStats
-
-  webpack(config, (err, stats) => {
-    if (err) {
-      callback(err)
-    } else {
-      output(stats, () => callback(), (...args) => gutil.log(...args))
-    }
-  })
-})
+gulp.task('build', ['build:svg'])
 
 gulp.task('build:svg', () => {
   return gulp.src(`${SRC_DIR}/assets/svg/*.svg`)
@@ -75,16 +43,16 @@ gulp.task('build:svg', () => {
           sprite: 'sprite.svg',
           inline: true,
           example: true,
-          dest: 'partials',
-        },
+          dest: 'images'
+        }
       },
       shape: {
         id: {
-          generator: 'svg-%s',
-        },
-      },
+          generator: 'svg-%s'
+        }
+      }
     }))
-    .pipe(gulp.dest('server/dist/views'));
+    .pipe(gulp.dest('frontend/src/assets'));
 });
 
 gulp.task('watch:svg', () => {
