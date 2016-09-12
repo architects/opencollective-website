@@ -1,7 +1,7 @@
 import webpack from 'webpack'
 import pick from 'lodash/pick'
 import mapValues from 'lodash/mapValues'
-import plugin from './helpers/plugins'
+import plugin from './plugins'
 import get from 'lodash/get'
 import omit from 'lodash/omit'
 
@@ -16,8 +16,8 @@ export function buildConfig (options = {}) {
   return omit(configuration, 'environment', 'platform')
 }
 
-export function getConfig(environment = process.env.NODE_ENV, platform = process.env.TARGET_PLATFORM || 'web') {
-
+export function getConfig(environment = process.env.NODE_ENV, platform = process.env.TARGET_PLATFORM || 'frontend') {
+  return require(`./config/webpack.config.${platform}.babel`)(environment)
 }
 
-export default compiler
+export default createCompiler

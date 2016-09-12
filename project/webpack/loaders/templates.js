@@ -1,8 +1,11 @@
 import defaults from 'lodash/defaults'
 import { join } from 'path'
-import { knownHelpers } from '../server/views'
 
 export function websiteViews(options = {}) {
+  const { knownHelpers } = require(
+    join(process.cwd(), 'server', 'src', 'views')
+  ) 
+
   defaults(options, {
     helperDirs: [
       join(process.cwd(), 'server', 'src', 'views', 'helpers')

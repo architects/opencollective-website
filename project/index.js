@@ -6,10 +6,11 @@ const paths = require('./paths')
 const argv = require('minimist')(process.argv)
 const camelCase = require('lodash/camelCase')
 const mapKeys = require('lodash/mapKeys')
+const omit = require('lodash/omit')
 
 const projectInterface = {
   argv,
-  cliOptions: mapKeys(argv, (v,k) => camelCase(k)),
+  cliOptions: mapKeys(omit(argv,'_'), (v,k) => camelCase(k)),
   command: argv._.slice(2).join(' '),
   config: require('config'),
   name,

@@ -1,54 +1,82 @@
-import mapValues = require('lodash/mapValues')
+import mapValues from 'lodash/mapValues'
+import * as loaders from '../loaders'
+
+const { babelLoader, babelHotLoader } = loaders.scripts
 
 export const builder = require("@terse/webpack").api()
 
-const pathsConfig = require('../../paths')
+export default (options = {}, project) => {
+  const paths = project.paths
 
-const paths = {
-  frontend: pathsConfig.frontend,
-  node_modules: pathsConfig.node_modules
-}
-
-const configs = {
-  babel: {
-    development: require('../config/babel.development'),
-    production: require('../config/babel.production')
-  }
-}
-
-export default (options = {}) => {
-  builder
+  const cfg = builder
+    .entry(options.entry)
+    .context(paths.context)
     .target('web')
-    .context(pathsConfig.context)
+    .modules(paths.frontend.src)
+
+    .alias('joi', 'joi-browser')
+    
     .output({
       path: paths.frontend.output,
-      publicPath: paths.frontend.public,
+      publicPath: paths.frontend.publicPath,
       name: '[name].js'
     })
-    .modules(paths.frontend.src)
+
+    .plugin('webpack.DefinePlugin', stringify({...options.defineVaiables, 'process.env.NODE_ENV': 'development'}))
+
+    .plugin('webpack.ProvidePlugin', {
+      Promise: 'bluebird',
+      fetch: 'exports?self.fetch!whatwg-fetch'
+    })
+
+    .plugin('copy-webpack-plugin', {
+      from: paths.frontend.assets
+    })
+
     .loader('json', '.json')
-    .when('development', development.bind(builder, options))
-    .when('production', production.bind(builder, options))
+
+    .loader('file', ['.eot','.svg','.ttf','.woff','.woff2'], {
+      loader: 'file-loader',
+      include:[
+        paths.frontend.assets
+      ]
+    })
+
+    .loader('images', ['.jpg','.png','.gif'], loaders.assets.imageLoader('development'))
+
+    .loader('css', '.css', {
+      loaders: ['css', 'postcss'],
+      include: [
+        paths.frontend.join('src', 'css')
+      ],
+      exclude:[
+        paths.node_modules
+      ]
+    })
+
+    // I believe this is fixed in a later version of numbro
+    .loader('numbro', {
+      test: /numbro\/numbro/,
+      loader: 'imports?require=>false'
+    })
+
+    .when('development', development.bind(builder, {...options, paths}))
+    .when('production', production.bind(builder, {...options, paths}))
+
+  if (options)
+
+  return cfg
 }
 
 const production = (options, builder) => (
   builder
-    .loader('babel', '.js', {
-      query: configs.babel.production(),
-      include: [
-        paths.frontend.src
-      ],
-      exclude: [
-        /node_modules/
-      ]
-    })
+    .loader('babel', '.js', babelLoader())
     .loader('css', '.css', {
-
       include: [
-        paths.frontend.src,
+        options.paths.frontend.src
       ],
       exclude: [
-        paths.node_modules
+        options.paths.node_modules
       ]
     })
 )
@@ -56,18 +84,12 @@ const production = (options, builder) => (
 const development = (options, builder) => (
   builder
     .plugin('webpack.HotModuleReplacementPlugin')
-    .plugin('webpack.DefinePlugin', mapValues(options.defineVariables, (value) => (
-      JSON.stringify(value)
-    )))
-    .loader('babel', '.js', {
-      query: configs.babel.development({
-        hot: true
-      }),
-      include: [
-        paths.frontend.src
-      ],
-      exclude: [
-        /node_modules/
+    .plugin('webpack.DefinePlugin', stringify({...options.defineVaiables, 'process.env.NODE_ENV': 'development'}))
+    .loader('babel', '.js', babelHotLoader({
+      sourcePaths: [
+        options.paths.frontend.src
       ]
-    })
+    }))
 )
+
+const stringify = (hash) => JSON.stringify(hash)

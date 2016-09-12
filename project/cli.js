@@ -49,12 +49,9 @@ export function start(project = {}) {
       cli.label('Starting the project.', 'rocket')
       showInfo(project)
 
-      require('./start')({
+      require('./scripts/start')(project.cliOptions, {
         env: process.env.NODE_ENV || 'development',
-        argv: project.cliOptions,
-        context: {
-          project
-        }
+        project
       })
 
       break;
