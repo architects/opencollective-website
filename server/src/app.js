@@ -34,7 +34,16 @@ export function setup(app = express()) {
   /**
    * Handlebars template engine
    */
-  views(app);
+  views(app, {
+    helpers: require('./lib/formatters'),
+    // TODO: Find a nicer way of syncing this value between client side handlebars 
+    register: [
+      'currency',
+      'singular',
+      'titleCase'
+    ]
+  });
+
   routes(app);
 
   /**
@@ -45,7 +54,7 @@ export function setup(app = express()) {
     // TODO this should redirect to a 404 page so that window location is changed
     return next({
       code: 404,
-      message: 'We can\'t find that page.',
+      message: 'We can\'t find that page.'
     });
   });
 
@@ -69,8 +78,8 @@ export function setup(app = express()) {
       message: process.env.NODE_ENV === 'production' ? 'We couldn\'t find that page :(' : `Error ${err.code}: ${err.message}`,
       stack: process.env.NODE_ENV === 'production' ? '' : err.stack,
       options: {
-        showGA: config.GoogleAnalytics.active,
-      },
+        showGA: config.GoogleAnalytics.active
+      }
     });
   });
 
