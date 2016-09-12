@@ -1,16 +1,15 @@
 import config from 'config';
-import api from './lib/api';
 import expressSession from 'express-session';
 import ua from 'universal-analytics';
 import filterCollection from '../../frontend/src/lib/filter_collection';
+import * as client from './lib/client'
 
 /**
  * Fetch users by slug
  */
 const fetchActiveUsers = (options) => {
   return (req, res, next) => {
-    api
-      .get(`/groups/${req.params.slug}/users?filter=active`, options)
+    return client.fetchActiveUsers(req.params.slug, options)
       .then((users) => {
         req.users = users;
       })
@@ -23,8 +22,7 @@ const fetchActiveUsers = (options) => {
  * Fetch group by slug
  */
 const fetchGroupBySlug = (req, res, next) => {
-  api
-    .get(`/groups/${req.params.slug.toLowerCase()}/`)
+  return client.fetchGroup(req.params.slug)
     .then(group => {
       req.group = group;
       next();
@@ -40,9 +38,7 @@ const extractGithubUsernameFromToken = (req, res, next) => {
     return next();
   }
 
-  api.get('/connected-accounts/github/verify', {headers: {
-      Authorization: `Bearer ${req.params.token}`
-    }})
+  return client.verifyGithubAccount(req.params.token)
     .then(res => {
       req.connectedAccount = {
         username: res.username,
@@ -61,12 +57,11 @@ const extractGithubUsernameFromToken = (req, res, next) => {
  * Fetch leaderboard
  */
 const fetchLeaderboard = (req, res, next) => {
-    api
-      .get(`/leaderboard`)
-      .then((groups) => {
-        req.leaderboard = groups;
-      })
-      .then(next);
+  return client.fetchLeaderboard()
+    .then((leaderboard) => {
+      req.leaderboard = leaderboard;
+    })
+    .then(next);
 };
 
 /**
@@ -118,7 +113,7 @@ const addMeta = (req, res, next) => {
       title: `${group.name} is on Open Collective`,
       description: `${group.name} is on a mission to ${group.mission}`,
       image: group.image || group.logo,
-      twitter: `@${group.twitterHandle}`,
+      twitter: `@${group.twitterHandle}`
     };
   } else {
     const user = req.group;
