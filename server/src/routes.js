@@ -27,16 +27,16 @@ export default (app) => {
    */
   app.use(favicon(path.join(__dirname, '/../../frontend/dist/images/favicon.ico.png')));
 
+  /**
+   * GET /robots.txt
+   */
+  app.use(robots(path.join(__dirname, '../../frontend/dist/robots.txt')));
+
   if (process.env.NODE_ENV !== 'production') {
     require('./development')(app)
   } else {
     app.use('/static', express.static(path.join(__dirname, `../../frontend/dist`), { maxAge: '1d' }));
   }
-
-  /**
-   * GET /robots.txt
-   */
-  app.use(robots(path.join(__dirname, '../../frontend/dist/robots.txt')));
 
   /**
    * Pipe the requests before the middlewares, the piping will only work with raw

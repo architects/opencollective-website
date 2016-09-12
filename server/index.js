@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === 'development') {
 process.env.NODE_CONFIG_DIR = process.env.NODE_CONFIG_DIR || path.join(__dirname, 'config')
 require('config')
 
-const paths = require('../webpack/paths')
+const paths = require('../project/paths')
 
 const app = (options) => {
   if (process.env.NODE_ENV === 'production') {
