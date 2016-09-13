@@ -1,10 +1,6 @@
 require('colors')
 
-const repl = require('repl')
 const lodash = require('lodash')
-const exists = require('fs').existsSync
-const path = require('path')
-const argv = require('minimist')(process.argv)
 
 function start (options = {}, context = {}, ready = function() {}) {
   options = lodash.defaults(options, {
@@ -19,30 +15,23 @@ function start (options = {}, context = {}, ready = function() {}) {
 
   const server = require('repl').start(options)
 
+  Object.keys(context).forEach(key => {
+    server.context[key] = context[key]
+  })
+
   try {
-    exports.promisify(server)
-
-    server.defineCommand('cls', {
-      help: 'clear the screen',
-      action: function(){
-        require('cli-clear')()
-        this.displayPrompt()
-      }
-    })
-
-    Object.keys(context).forEach(key => {
-      server.context[key] = context[key]
-    })
-
+    promisify(server)
   } catch (error) {
     ready(error)
     return
   }
 
+  ready && ready(server)
+  
   return server
 }
 
-exports.promisify = function promisify (repl) {
+export function promisify (repl) {
   var realEval = repl.eval;
   var promiseEval = function (cmd, context, filename, callback) {
     realEval.call(repl, cmd, context, filename, function (err, res) {
@@ -108,10 +97,6 @@ exports.promisify = function promisify (repl) {
       this.displayPrompt();
     }
   }
-};
+}
 
 module.exports = start
-
-if (module === require.main) {
-  start({ icon: 'sunny' })
-}

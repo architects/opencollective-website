@@ -1,44 +1,33 @@
-const path = require('path')
-const findCache = require('find-cache-dir')
-
-const resolvePaths = (moduleIds) => moduleIds.map(id => require.resolve(id))
+import findCache from 'find-cache-dir'
+import compact from 'lodash/compact'
 
 export default (options) => ({
   // Ignore the project's babelrc
   babelrc: false,
 
-  // This is a setting for babel-loader only
+  // Creates a cache in node_modules/.cache
   cacheDirectory: findCache({
     name: 'opencollective-website'
   }),
 
   presets: resolvePaths([
-    "babel-preset-latest",
-    "babel-preset-react"
-  ].concat(
-    options.hot === 'false'
-      ? []
-      : ['babel-preset-react-hmre'])
-  ),
+    "babel-preset-es2015",
+    "babel-preset-stage-0",
+    "babel-preset-react",
+    // Use the HMR transforms unless opted out
+    (options.hot !== false
+        ? "babel-preset-react-hmre"
+        : null)
+  ]),
 
   plugins: resolvePaths([
     "babel-plugin-add-module-exports",
-    "babel-plugin-lodash"
-  ]).concat([
-    require.resolve('babel-plugin-transform-class-properties'),
-
-    require.resolve('babel-plugin-transform-object-rest-spread'),
-
-    [require.resolve('babel-plugin-transform-regenerator'), {
-      // Async functions are converted to generators by babel-preset-latest
-      async: false
-    }],
-
-    [require.resolve('babel-plugin-transform-runtime'), {
-      helpers: false,
-      polyfill: false,
-      regenerator: true,
-      moduleName: path.dirname(require.resolve('babel-runtime/package'))
-    }]
+    "babel-plugin-lodash",
+    "babel-plugin-transform-export-extensions",
+    "babel-plugin-transform-async-to-generator",
+    "babel-plugin-transform-regenerator"
   ])
 })
+
+const resolvePaths = (shortNames) =>
+  compact(shortNames).map(require.resolve)

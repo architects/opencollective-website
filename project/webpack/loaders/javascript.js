@@ -1,20 +1,22 @@
-const configs = {
-  production: require('../config/babel.production'),
-  development: require('../config/babel.development')
-}
+import development from '../config/babel.development'
+import production from '../config/babel.production'
 
-export const babelHotLoader = (options = {}) => ({
-  ...babelLoader({
-    options,
-    config: configs.development({hot:true})
-  })
+export const babelHotLoader = (options) => ({
+  query: {
+    babelrc: false,
+    ...development({
+      hot: options.hot !== false
+    })
+  },
+  include: options.include,
+  exclude: options.exclude
 })
 
 export const babelLoader = (options = {}) => ({
   query: {
-    ...configs.production(),
-    ...(options.config || {})
+    ...production(),
+    babelrc: false
   },
-  include: (options.sourcePaths || []).concat(options.include || []),
-  exclude: [/node_modules/].concat(options.exclude || [])
+  include: options.include,
+  exclude: options.exclude
 })

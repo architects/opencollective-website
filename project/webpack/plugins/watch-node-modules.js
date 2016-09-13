@@ -8,7 +8,6 @@
  */
 
 function WatchMissingNodeModulesPlugin(nodeModulesPath) {
-  console.log(nodeModulesPath)
   this.nodeModulesPath = nodeModulesPath;
 }
 

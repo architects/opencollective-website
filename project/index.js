@@ -7,25 +7,40 @@ const argv = require('minimist')(process.argv)
 const camelCase = require('lodash/camelCase')
 const mapKeys = require('lodash/mapKeys')
 const omit = require('lodash/omit')
+const result = require('lodash/result')
+const get = require('lodash/get')
 
-const projectInterface = {
-  argv,
-  cliOptions: mapKeys(omit(argv,'_'), (v,k) => camelCase(k)),
+const project = {
+  argv: mapKeys(omit(argv,'_'), (v,k) => camelCase(k)),
   command: argv._.slice(2).join(' '),
+  get commandScope() {
+    return project.command.split(' ')[0]
+  },
   config: require('config'),
   name,
   paths,
   version,
+  env: process.env.NODE_ENV,
   get gitInfo() {
     return require('./git-info')(paths.project)
+  },
+  get(key, defaultVal) {
+    return get(project, key, defaultVal)
+  },
+  result(key, defaultVal) {
+    return result(project, key, defaultVal)
   },
   startRepl(...args) {
     require('./repl')(...args)
   }
 }
 
-module.exports = projectInterface
+project.cli = require('./utils/pretty-cli').attach(project)
 
-if (module === require.main) {
-  require('./cli').start(projectInterface)
+module.exports = {
+  project
+}
+
+if (require.main === module) {
+  require('./cli').start(project)
 }

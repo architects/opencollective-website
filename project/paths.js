@@ -1,4 +1,6 @@
 const { join, resolve, relative } = require('path')
+const result = require('lodash/result')
+const get = require('lodash/get')
 
 if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
   require('dotenv').load()
@@ -14,8 +16,16 @@ const SERVER_ROOT = env.SERVER_ROOT || resolve(PROJECT_ROOT, 'server')
 const paths = {
   cwd: process.cwd(),
 
+  get: (...args) => get(paths, ...args),
+
+  join: (...args) => join(paths.cwd, ...args),
+
+  resolve: (...args) => resolve(paths.cwd, ...args),
+
   project: PROJECT_ROOT,
 
+  tools: __dirname,
+  
   config: env.NODE_CONFIG_DIR || join(SERVER_ROOT, 'config'),
 
   frontend: {
