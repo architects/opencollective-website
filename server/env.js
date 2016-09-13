@@ -1,4 +1,4 @@
-const argv = require('minimist')
+const argv = require('minimist')(process.argv)
 const path = require('path')
 
 process.env.NODE_ENV = argv.env || process.env.NODE_ENV || 'development'
@@ -8,4 +8,4 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const paths = require('../project/paths')
-process.env.NODE_CONFIG_DIR = process.env.NODE_CONFIG_DIR || paths.server.config || path.join(__dirname, 'config')
+process.env.NODE_CONFIG_DIR = process.env.NODE_CONFIG_DIR || paths.config || path.join(__dirname, 'config')
