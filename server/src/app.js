@@ -17,8 +17,6 @@ export function setup(app = express()) {
   app.locals.version = pkg.version;
   app.locals.SHOW_GA = (process.env.NODE_ENV === 'production');
 
-  app.set('projectPaths', require('../../paths'))
-
   app.set('trust proxy', 1) // trust first proxy for https cookies
 
   /**
@@ -36,7 +34,7 @@ export function setup(app = express()) {
    */
   views(app, {
     helpers: require('./lib/formatters'),
-    // TODO: Find a nicer way of syncing this value between client side handlebars 
+    // TODO: Find a nicer way of syncing this value between client side handlebars
     register: [
       'currency',
       'singular',

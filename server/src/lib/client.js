@@ -15,3 +15,9 @@ export const verifyGithubAccount = (token) =>
       Authorization: `Bearer ${token}`
     }
   })
+
+export const fetchTransactions = (slug, options = {}) =>
+  api.get(`/groups/${slug.toLowerCase()}/transactions?per_page=${options.perPage || 3}`)
+
+export const fetchUsers = (slug) =>
+  api.get(`/groups/${slug}/users`)

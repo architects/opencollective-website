@@ -1,9 +1,9 @@
 import React from 'react';
 import config from 'config';
 import { renderToString } from 'react-dom/server';
-import api from '../lib/api';
 import Widget from '../../../frontend/src/components/Widget';
 import i18n from '../../../frontend/src/lib/i18n';
+import { fetchTransactions, fetchUsers } from '../lib/client'
 
 /**
  * Show the widget of a collective
@@ -12,8 +12,8 @@ const widget = (req, res, next) => {
   const { group } = req;
 
   Promise.all([
-    api.get(`/groups/${group.slug}/transactions?per_page=3`),
-    api.get(`/groups/${group.slug}/users`)
+    fetchTransactions(group.slug, {perPage: 3}),
+    fetchUsers(group.slug)
   ])
   .then(([transactions, users]) => {
     const props = {

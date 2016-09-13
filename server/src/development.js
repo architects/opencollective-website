@@ -1,15 +1,10 @@
-export default (app) => {
-  const webpackConfig = require('../../webpack.web')('development', {
-    publicPath: '/static/'
-  })
+import webpackDevMiddleware from 'webpack-dev-middleware'
+import webpackHotMiddleware from 'webpack-hot-middleware'
 
-  const webpack = require('webpack');
-  const webpackDevMiddleware = require('webpack-dev-middleware');
-  const webpackHotMiddleware = require('webpack-hot-middleware');
-  const compiler = webpack(webpackConfig);
+export default (app, compiler) => {
   const middleware = webpackDevMiddleware(compiler, {
     noInfo: true,
-    publicPath: webpackConfig.output.publicPath,
+    publicPath: compiler.options.output.publicPath,
     silent: true,
     stats: 'normal'
   });
