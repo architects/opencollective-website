@@ -5,6 +5,7 @@ const mapValues = require('lodash/mapValues')
 const padEnd = require('lodash/padEnd')
 const chalk = require('chalk')
 const max = require('lodash/max')
+const path = require('path')
 
 export const template = () => {
   const block = (msg) => ` ${msg} `
@@ -197,7 +198,9 @@ export const attach = (project) => {
 
     cli.addCustomMethod('displayErrors', function(title, messages){
       if (!messages.length) return;
+
       cli.error({type:'title', name:'ERROR', message: title});
+
       if (messages.some(isLikelyASyntaxError)) {
         // If there are any syntax errors, show just them.
         // This prevents a confusing ESLint parsing error

@@ -18,45 +18,13 @@ export function execute (options = {}, context = {}) {
   const { project } = context
   const cli = project.cli
 
-  const serverConfig = webpack.buildConfig('server', {
-    entry: {
-      server: project.paths.server.join('index.js')
-    }
-  })
-
-  const cfg = serverConfig.getConfig()
-
-  cfg.profile = true
-
-  const compiler = webpack.compiler(cfg).enhanced
-
-  compiler.start()
+  Promise.all(project.available.compilers.map(id => project.compiler(id).enhanced.start()))
     .then((results) => {
-      if (results.hasErrors) {
-        cli.displayErrors('Failed to compile\n', results.errors)
-      } else if (results.hasWarnings) {
-        cli.displayErrors('Compiled with warnings\n', results.warnings)
-      } else {
-        cli.clear()
-
-        cli.print()
-        cli.success({
-          type: 'title',
-          name: 'DONE',
-          message: `Compiled successfully in ${results.timeInMs} ms`
-        })
-
-        cli.print()
-        cli.buildInfo(results)
-        cli.print(`\n\n`)
-      }
-    })
-    .catch((error) => {
-      cli.error({
-        type: 'title',
-        name: 'FATAL',
-        message: error
+      results.forEach(report => {
+        cli.buildInfo(report)
       })
     })
-
+    .catch(err => {
+      cli.error(err)
+    })
 }

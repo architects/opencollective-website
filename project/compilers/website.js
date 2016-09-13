@@ -3,37 +3,21 @@ import plugins from '../webpack/plugins'
 
 export const info = {
   name: 'website',
-  description: 'compiles static assets from our frontend'
+  description: 'compiles the website assets for our frontend'
 }
 
-export const create = (project, options = {}) => {
-  const frontend = project.paths
-  const css = (...args) => frontend.relative('css', ...args)
-
-  const { plugin, loader } = plugins.styleExtractor({
-    loaders: ['css', 'postcss'],
-    name: '[name].css'
-  })
+export const create = (options = {}) => {
+  const { frontend } = options.paths
 
   const config = buildConfig('web', {
     entry: {
-      main: `!!${loader}!${css('main.css')}`,
-      widget: `!!${loader}!${css('widget.css')}`
+      website: frontend.srcPath('index.web')
     }
   })
 
-  .plugin('webpack-shell-plugin', {
-    onBuildStart: [
-      'gulp build:svg'
-    ]
+  return compiler({
+    name: options.name,
+    ...config,
+    cache: options.cache
   })
-  .getConfig()
-
-  config.plugins.push(plugin)
-
-  if (options.cache) {
-    config.cache = options.cache
-  }
-
-  return compiler(config)
 }

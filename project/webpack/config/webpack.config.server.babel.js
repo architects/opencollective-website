@@ -13,8 +13,8 @@ const project = require('../..').project
 const externals = require('../plugins/contrib').ExternalNodeModules
 const { EXPOSE_ENV } = require('./env')
 
-const server = (...args) => project.paths.server.relative(...args)
-const frontend = (...args) => project.paths.frontend.relative(...args)
+const server = (...args) => project.paths.server.srcPath(...args)
+const frontend = (...args) => project.paths.frontend.srcPath(...args)
 
 const entries = {
   development: {

@@ -1,36 +1,28 @@
-require('./env')
+const mapKeys = require('lodash/mapKeys')
+const camelCase = require('lodash/camelCase')
+const omit = require('lodash/omit')
+const argv = mapKeys(omit(require('minimist')(process.argv),'_'), (v,k) => camelCase(k))
+const pkg = require('..')
+const paths = pkg.paths
 
-const argv = require('minimist')(process.argv)
-const fs = require('fs')
-const paths = require('../project/paths')
+process.env.NODE_ENV = argv.env || process.env.NODE_ENV || 'development'
 
-require('config')
-
-const app = (options) => {
-  if (process.env.NODE_ENV === 'production') {
-    return require('./dist/app').setup(options)
-  } else if (process.env.NODE_ENV === 'development') {
-    require('babel-register')
-    return require('./src/app').setup(options)
-  }
+if (process.env.NODE_ENV === 'development') {
+  require('dotenv').load()
+  require('babel-register')
+  process.env.NODE_CONFIG_DIR = paths.config
 }
 
-const checkDependencies = () => {
-  const exists = fs.exitsSync
+console.log(
+  JSON.stringify(pkg, null, 2)
+)
 
-  if (!exists(paths.server.renderer)) {
-    throw ('The Server Rendering Bundle does not exist')
-  }
-}
+const app = process.env.NODE_ENV === 'production'
+  ? require(paths.server.join('dist/index.js'))
+  : require(paths.server.join('src/index.js'))
 
-let instance
+app.setup(  )
 
-// Start the server when called from the CLI
-if (module === require.main) {
-  if (checkDependencies()) {
-    instance = app(argv)
-    instance.start()
-  } else {
-    console.log('dependencies are not met')
-  }
+if (require.main === module) {
+  app.start()
 }

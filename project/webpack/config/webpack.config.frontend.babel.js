@@ -6,12 +6,12 @@ const entries = {
   development: {
     website: [
       'webpack-hot-middleware/client',
-      project.paths.frontend.relative('index.web')
+      project.paths.frontend.srcPath('index.web')
     ]
   },
   production: {
     website: [
-      project.paths.frontend.relative('index.web')
+      project.paths.frontend.srcPath('index.web')
     ]
   }
 }

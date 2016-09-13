@@ -24,12 +24,38 @@ const project = {
   get gitInfo() {
     return require('./git-info')(paths.project)
   },
+
+  get available() {
+    return {
+      get compilers() {
+        return Object.keys(require('./compilers'))
+      },
+
+      get commands() {
+        return Object.keys(require('./scripts'))
+      }
+    }
+  },
+
+  getCompiler(name) {
+    return require('./compilers')[name]
+  },
+
+  compiler(name, options = {}) {
+    options.name = name
+    options.paths = project.paths
+    
+    return this.getCompiler(name).create(options)
+  },
+
   get(key, defaultVal) {
     return get(project, key, defaultVal)
   },
+
   result(key, defaultVal) {
     return result(project, key, defaultVal)
   },
+
   startRepl(...args) {
     require('./repl')(...args)
   }

@@ -1,39 +1,25 @@
 import { buildConfig, compiler } from '../webpack'
-import plugins from '../webpack/plugins'
 
 export const info = {
   name: 'server',
   description: 'a webpack compiler that compiles our server'
 }
 
-export const create = (project, options = {}) => {
-  const frontend = project.paths
-  const css = (...args) => frontend.relative('css', ...args)
+export const create = (options = {}) => {
+  const { paths } = options
+  const { frontend, server } = paths
 
-  const { plugin, loader } = plugins.styleExtractor({
-    loaders: ['css', 'postcss'],
-    name: '[name].css'
-  })
-
-  const config = buildConfig('web', {
+  const config = buildConfig('server', {
     entry: {
-      main: `!!${loader}!${css('main.css')}`,
-      widget: `!!${loader}!${css('widget.css')}`
+      index: server.srcPath('index'),
+      renderer: frontend.srcPath('index.node'),
+      client: frontend.srcPath('lib/client')
     }
+  }).getConfig()
+
+  return compiler({
+    name: options.name,
+    ...config,
+    cache: options.cache
   })
-
-  .plugin('webpack-shell-plugin', {
-    onBuildStart: [
-      'gulp build:svg'
-    ]
-  })
-  .getConfig()
-
-  config.plugins.push(plugin)
-
-  if (options.cache) {
-    config.cache = options.cache
-  }
-
-  return compiler(config)
 }

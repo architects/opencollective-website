@@ -1,62 +1,21 @@
 import webpack from 'webpack'
-import plugins from './plugins/core'
+import mapValues from 'lodash/mapValues'
+
 import { builder as buildFrontendConfig } from './config/webpack.config.frontend.babel'
 import { builder as buildServerConfig } from './config/webpack.config.server.babel'
 
-const project = require('../index').project
-
-const frontend = project.paths.frontend
-const server = project.paths.server
-
 const __cache = {}
 
-export const compilers = {
-  get website() {
-    const config = {
-      ...getConfig('web'),
-      entry: {
-        website: [
-          frontend.relative('index.web')
-        ]
-      }
-    }
-
-    return compiler(config)
-  },
-
-  get renderers() {
-    const config = getConfig('server', {
-      entry: {
-        website: [
-          frontend.relative('index.node')
-        ],
-        server: server.relative('index.js')
-      }
-    })
-
-    return compiler(config)
-  },
-
-  /**
-   * WIP:
-   *
-   * Want the ability to build stylesheets separately for debugging SSR flash
-   */
-  get stylesheets() {
-
-  }
-}
-
-export function compiler(config, ...args) {
+export function compiler(config, options = {}) {
   const base = webpack(config)
 
   Object.assign(base, {
     get enhanced() {
-      return enhance(base)
+      return enhance(base, options.compiler, options.compilation)
     }
   })
 
-  return base.enhanced
+  return base
 }
 
 export function exportConfig(platform, options) {
@@ -85,40 +44,58 @@ export function buildConfig(platform, options = {}) {
   }
 }
 
-function enhance (compilerInstance) {
+function enhance (compilerInstance, compilerHooks, compilationHooks) {
+  if (compilerHooks) {
+    mapValues(compilerHooks, (plugin, fn) => compiler.plugin(plugin, fn))
+  }
+
+  if (compilationHooks) {
+    compiler.plugin('compilation', (compilation) => {
+      mapValues(compilationHooks, (plugin, fn) => {
+        compilation.plugin(plugin, fn)
+      })
+    })
+  }
+
   compilerInstance.start = (options = {}) => (
     new Promise((resolve, reject) => {
       compilerInstance.run((err, stats) => {
         if (err) {
           reject(err)
         } else {
-          resolve({
-            get hasErrors() {
-              return stats.hasErrors()
-            },
-            get hasWarnings() {
-              return stats.hasWarnings()
-            },
-            get json() {
-              return stats.toJson(options.stats)
-            },
-            get timeInMs() {
-              return ((stats.endTime-stats.startTime)/ 1000).toFixed(2)
-            },
-            get hash() {
-              return stats.hash
-            },
-            get getStats() {
-              return stats
-            },
-            get report() {
-              return stats.toString({ colors: options.colors !== false, ...(options.stats || {}) })
-            }
-          })
+          resolve(createResult(stats))
         }
       })
     })
   )
 
   return compilerInstance
+}
+
+function createResult(stats, options = {}) {
+  const json = stats.toJson(options)
+
+  return {
+    get hasErrors() {
+      return stats.hasErrors()
+    },
+    get hasWarnings() {
+      return stats.hasWarnings()
+    },
+    get json() {
+      return json
+    },
+    get timeInMs() {
+      return ((stats.endTime-stats.startTime)/ 1000).toFixed(2)
+    },
+    get hash() {
+      return stats.hash
+    },
+    getStats() {
+      return stats
+    },
+    get report() {
+      return stats.toString(options)
+    }
+  }
 }

@@ -9,7 +9,7 @@ describe('Paths Configuration', () => {
   })
 
   it('provides an easy way to construct paths', () => {
-    expect(paths.frontend.relative('index.web.js')).toEqual(`./frontend/src/index.web.js`)
-    expect(paths.server.relative('index.node.js')).toEqual(`./server/src/index.node.js`)
+    expect(paths.frontend.srcPath('index.web.js')).toEqual(`./frontend/src/index.web.js`)
+    expect(paths.server.srcPath('index.node.js')).toEqual(`./server/src/index.node.js`)
   })
 })

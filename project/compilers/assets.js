@@ -6,9 +6,11 @@ export const info = {
   description: 'a webpack compiler that compiles our svg, css, images, etc'
 }
 
-export const create = (project, options = {}) => {
-  const {frontend} = project.paths
-  const css = (...args) => frontend.relative('css', ...args)
+export const create = (options = {}) => {
+  const { paths } = options
+  const { frontend } = paths
+
+  const css = (...args) => frontend.srcPath('css', ...args)
 
   const { plugin, loader } = plugins.styleExtractor({
     loaders: ['css', 'postcss'],
@@ -35,5 +37,9 @@ export const create = (project, options = {}) => {
     config.cache = options.cache
   }
 
-  return compiler(config)
+  return compiler({
+    name: options.name,
+    ...config,
+    cache: options.cache
+  })
 }
