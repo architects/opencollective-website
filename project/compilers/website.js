@@ -22,7 +22,7 @@ export const create = (options = {}) => {
         frontend.srcPath('index.web')
       ]
     }
-  })
+  } )
 
   .plugin('html-webpack-plugin', {
     template: frontend.srcPath('templates/200.html'),
@@ -53,6 +53,8 @@ export const create = (options = {}) => {
   if (process.env.NODE_ENV === 'production') {
     config.plugins.push( new plugins.ExtractTextPlugin('[name].css') )
   }
+
+  config.plugins && config.plugins.push( ...(options.plugins || []) )
 
   return compiler({
     name: options.name,

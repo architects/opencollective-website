@@ -24,7 +24,9 @@ export function execute (options = {}, context = {}) {
     webpack: 'Get access to our webpack compiler internals',
     project: 'Get access to the project metadata store',
     compilers: 'Get an index of all the available compilers',
-    renderer: 'Get an instance of the universal renderer'
+    renderer: 'Get an instance of the universal renderer',
+    copy: 'Get access to the project i18n strings',
+    dist: 'Get info about the builds'
   })
 
   cli.print('\n')
@@ -48,6 +50,10 @@ export function execute (options = {}, context = {}) {
 
     get renderer() {
       return require('../../frontend/src/index.node')
+    },
+
+    get dist() {
+
     }
   }, (replServer) => {
     if (project.command.options.compiler) {
@@ -65,7 +71,7 @@ export function execute (options = {}, context = {}) {
           if (err) {
 
           } else if (!stats.hasErrors() && !stats.hasWarnings()) {
-            
+
           }
         })
       }

@@ -10,7 +10,6 @@ const omitBy = require('lodash/omitBy')
 const result = require('lodash/result')
 const get = require('lodash/get')
 
-
 const project = {
   name,
   version,
@@ -54,11 +53,30 @@ const project = {
       },
 
       get commands() {
-        return Object.keys(require('./scripts'))
+        return Object.keys(require('./commands'))
       },
 
       get scripts() {
         return Object.keys(require('./scripts'))
+      }
+    }
+  },
+
+  get distributions() {
+    return {
+      get server() {
+        return project.fsx.readdirSync(
+          project.paths.server.output
+        )
+        .filter(f => f.match(/\.js$/))
+        .map(f => [f, project.paths.server.relative(`../dist/${f}`)])
+      },
+      get client() {
+        return project.fsx.readdirSync(
+          project.paths.server.output
+        )
+        .filter(f => f.match(/\.js$/))
+        .map(f => [f, project.paths.server.relative(`../dist/${f}`)])
       }
     }
   },
@@ -68,7 +86,7 @@ const project = {
    */
   console(options = {}, context = {}, onReady) {
     context.project = project
-    context.fs = fsx
+    context.fsx = project.fsx
 
     require('./repl')(options, context, onReady)
   },
@@ -81,7 +99,12 @@ const project = {
     options.name = name
     options.paths = project.paths
 
-    return this.getCompiler(name).create(options)
+    try {
+      return this.getCompiler(name).create(options)
+    } catch (error) {
+      project.cli.print(`Error creating compiler ${name}`, 2)
+      project.cli.print(error.message, 4)
+    }
   },
 
   get(key, defaultVal) {

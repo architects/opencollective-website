@@ -12,13 +12,23 @@ export const create = (options = {}) => {
   const config = buildConfig('server', {
     entry: {
       index: server.srcPath('index'),
-      client: frontend.srcPath('lib/client')
+      client: [
+        'babel-polyfill',
+        frontend.srcPath('lib/client')
+      ]
     }
   })
 
   .output({
     filename: '[name].js'
   })
+
+  .plugin('webpack.ProvidePlugin', {
+    fetch: 'exports?global.fetch!whatwg-fetch',
+    localStorage: 'localmockage'
+  })
+
+  config.plugins && config.plugins.push( ...(options.plugins || []) )
 
   .getConfig()
 
@@ -30,8 +40,7 @@ export const create = (options = {}) => {
   }
 
   return compiler({
-    name: options.name || 'server',
-    ...config,
-    cache: options.cache
+    name: 'server',
+    ...config
   })
 }

@@ -150,7 +150,7 @@ const development = (options, builder, paths = project.paths.frontend) => {
 // This exports a function which is compatible with using webpacks CLI
 export default (env) => {
   const config = builder({
-    entries: entries[process.env.NODE_ENV]
+    entry: entries[process.env.NODE_ENV]
   }).getConfig()
 
   config.postcss = require('./postcss')

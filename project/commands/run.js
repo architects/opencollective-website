@@ -14,14 +14,18 @@ export function execute (options = {}, context = {}) {
   const path = project.command.phrase.split(' ').slice(1).join('')
   const wrap = require('module').wrap
 
-  const script = new vm.Script(
-    wrap(project.fsx.readFileSync(path).toString())
-  )
+  const scriptPath = project.paths.join(`project/scripts/${path}`)
+  const code = project.fsx.readFileSync(scriptPath.toString())
+
+  const script = new vm.Script(code)
 
   const sandbox = {
     ...project.context,
     console: console,
-    ...require('chai')
+    ...require('chai'),
+    require,
+    Promise: require('bluebird'),
+    fetch: require('whatwg-fetch')
   }
 
   try {

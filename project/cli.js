@@ -5,14 +5,13 @@ import defaults from 'lodash/defaults'
 import attempt from 'lodash/attempt'
 import isError from 'lodash/isError'
 import get from 'lodash/get'
-const scripts = require('./scripts')
+const commands = require('./commands')
 
 import {describe} from './utils/describe-component'
 
-
 export function start(project, context = {}) {
   const cli = project.cli
-  const available = Object.keys(scripts)
+  const available = Object.keys(commands)
 
   cli.registerCommand('showHelp', (...args) => displayHelp(project, ...args))
 
@@ -22,30 +21,30 @@ export function start(project, context = {}) {
   } else if (available.indexOf(project.command.namespace) === -1) {
     cli.showHelp()
   } else {
-    const script = findScript(project.command)
+    const command = findCommand(project.command)
 
-    // the first argument to any script
-    const params = defaults({}, project.command.options, result(script, 'defaults'))
+    // the first argument to any command
+    const params = defaults({}, project.command.options, result(command, 'defaults'))
 
-    // the 2nd argument to any script
+    // the 2nd argument to any command
     const ctx = { ...context, project, env: project.env, command: project.command }
 
-    script.execute(params, ctx)
+    command.execute(params, ctx)
   }
 }
 
 const displayHelp = (project, options = {}) => {
   const cli = project.cli
-  const scripts = require('./scripts')
+  const commands = require('./commands')
 
   cli.print(`\n\n`)
   cli.print(`Available Commands`.underline.green, 2)
   cli.print(`\n`, 1)
 
   cli.paddedList(
-    Object.keys(scripts).reduce((memo, key) => {
-      const script = scripts[key]
-      memo[script.info.command] = script.info.description
+    Object.keys(commands).reduce((memo, key) => {
+      const command = commands[key]
+      memo[command.info.command] = command.info.decommandion
       return memo
     }, {})
   )
@@ -53,17 +52,17 @@ const displayHelp = (project, options = {}) => {
   cli.print('\n\n\n')
 }
 
-const findScript = (command) => {
-  const script = scripts[command.namespace]
+const findCommand = (command) => {
+  const result = commands[command.namespace]
 
-  if (!isFunction(script.execute)) {
-    throw 'Invalid script: must export an execute method and an info property'
+  if (!isFunction(result.execute)) {
+    throw 'Invalid command: must export an execute method and an info property'
   }
 
   return {
-    execute: script.execute,
-    validate: get(script, 'validate', () => true),
-    help: get(script, 'help', (params, context) => {
+    execute: result.execute,
+    validate: get(result, 'validate', () => true),
+    help: get(result, 'help', (params, context) => {
       context.project.cli.print(`\n\n${command.phrase} does not have any help.`)
     })
   }

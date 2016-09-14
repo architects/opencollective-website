@@ -44,6 +44,8 @@ export const create = (options = {}) => {
     ]
   })
 
+  config.plugins && config.plugins.push( ...(options.plugins || []) )
+
   return compiler({
     name: options.name || 'copy',
     ...config

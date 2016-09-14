@@ -32,6 +32,8 @@ export const create = (options = {}) => {
     filename: 'renderers/[name].js'
   }).getConfig()
 
+  config.plugins && config.plugins.push( ...(options.plugins || []) )
+
   return compiler({
     name: options.name || 'renderer',
     ...config
