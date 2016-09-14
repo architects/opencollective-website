@@ -12,13 +12,25 @@ export const create = (options = {}) => {
   const config = buildConfig('server', {
     entry: {
       index: server.srcPath('index'),
-      renderer: frontend.srcPath('index.node'),
       client: frontend.srcPath('lib/client')
     }
-  }).getConfig()
+  })
+
+  .output({
+    filename: '[name].js'
+  })
+
+  .getConfig()
+
+  // Disable a needless warning
+  config.module = {
+    ...config.module,
+    exprContextRegExp: /$^/,
+    exprContextCritical: false
+  }
 
   return compiler({
-    name: options.name,
+    name: options.name || 'server',
     ...config,
     cache: options.cache
   })

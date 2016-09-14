@@ -1,26 +1,46 @@
-require('./env')
 require('babel-register')
 
 const { name, version } = require('../package.json')
-const paths = require('./paths')
+const paths = require('..').paths
 const argv = require('minimist')(process.argv)
 const camelCase = require('lodash/camelCase')
 const mapKeys = require('lodash/mapKeys')
 const omit = require('lodash/omit')
+const omitBy = require('lodash/omitBy')
 const result = require('lodash/result')
 const get = require('lodash/get')
 
+
 const project = {
-  argv: mapKeys(omit(argv,'_'), (v,k) => camelCase(k)),
-  command: argv._.slice(2).join(' '),
-  get commandScope() {
-    return project.command.split(' ')[0]
-  },
-  config: require('config'),
   name,
-  paths,
   version,
+  paths,
+
   env: process.env.NODE_ENV,
+
+  get isCLI() {
+    return require.main === module
+  },
+
+  get command() {
+    const parts = argv._.slice(2)
+
+    return {
+      phrase: parts.join(' '),
+      namespace: parts[0],
+      action: parts[1] || parts[0],
+      options: mapKeys(omit(argv,'_'), (v,k) => camelCase(k))
+    }
+  },
+
+  get context() {
+    return {
+      project,
+      env: process.env.NODE_ENV,
+      command: project.command
+    }
+  },
+
   get gitInfo() {
     return require('./git-info')(paths.project)
   },
@@ -33,8 +53,22 @@ const project = {
 
       get commands() {
         return Object.keys(require('./scripts'))
+      },
+
+      get scripts() {
+        return Object.keys(require('./scripts'))
       }
     }
+  },
+
+  /**
+   * Starts a console with the project as a local variable
+   */
+  console(options = {}, context = {}, onReady) {
+    context.project = project
+    context.fs = fsx
+
+    require('./repl')(options, context, onReady)
   },
 
   getCompiler(name) {
@@ -44,7 +78,7 @@ const project = {
   compiler(name, options = {}) {
     options.name = name
     options.paths = project.paths
-    
+
     return this.getCompiler(name).create(options)
   },
 
@@ -56,12 +90,17 @@ const project = {
     return result(project, key, defaultVal)
   },
 
-  startRepl(...args) {
-    require('./repl')(...args)
+  get fsx() {
+    return require('./utils/fsx')
   }
 }
 
-project.cli = require('./utils/pretty-cli').attach(project)
+const cli = require('./utils/pretty-cli').attach(project)
+
+Object.defineProperty(project, 'cli', {
+  enumerable: false,
+  get: () => cli
+})
 
 module.exports = {
   project

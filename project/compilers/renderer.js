@@ -1,5 +1,4 @@
 import { buildConfig, compiler } from '../webpack'
-import plugins from '../webpack/plugins'
 
 export const info = {
   name: 'renderer',
@@ -13,13 +12,25 @@ export const create = (options = {}) => {
     entry: {
       website: [
         frontend.srcPath('index.node')
+      ],
+
+      widget: [
+        frontend.srcPath('components/Widget.js')
+      ],
+
+      i18n: [
+        frontend.srcPath('lib/i18n.js')
       ]
     }
+  })
+
+  .output({
+    path: server.join('dist'),
+    filename: 'renderers/[name].js'
   }).getConfig()
 
   return compiler({
-    name: options.name,
-    ...config,
-    cache: options.cache
+    name: options.name || 'renderer',
+    ...config
   })
 }

@@ -1,7 +1,9 @@
-import development from '../config/babel.development'
-import production from '../config/babel.production'
+import development from '../../config/babel.development'
+import production from '../../config/babel.production'
 
 export const babelHotLoader = (options) => ({
+  test: /\.js$/,
+  loader: 'babel',
   query: {
     babelrc: false,
     ...development({
@@ -13,6 +15,7 @@ export const babelHotLoader = (options) => ({
 })
 
 export const babelLoader = (options = {}) => ({
+  test: /\.js$/,
   query: {
     ...production(),
     babelrc: false

@@ -1,37 +1,40 @@
 import webpack from 'webpack'
 import mapValues from 'lodash/mapValues'
+import Report from './report' // eslint-disable-line
 
-import { builder as buildFrontendConfig } from './config/webpack.config.frontend.babel'
-import { builder as buildServerConfig } from './config/webpack.config.server.babel'
+import { builder as buildFrontendConfig } from '../config/webpack.config.frontend.babel'
+import { builder as buildServerConfig } from '../config/webpack.config.server.babel'
 
-const __cache = {}
+/**
+ * Creates a webpack compiler with the passed config(s).
+ * Adds a promise based interface for running the compiler
+ * and getting a results object that can be used to generate
+ * feedback
+ *
+ */
+export const compiler = (config, options = {}) => (
+  enhance(
+    webpack(config.getConfig ? config.getConfig() : config), options.compiler, options.compilation
+  )
+)
 
-export function compiler(config, options = {}) {
-  const base = webpack(config)
+export const exportConfig = (platform, options) => (
+  buildConfig(platform, options).toString()
+)
 
-  Object.assign(base, {
-    get enhanced() {
-      return enhance(base, options.compiler, options.compilation)
-    }
-  })
-
-  return base
-}
-
-export function exportConfig(platform, options) {
-  return buildConfig(platform, options).toString()
-}
-
-export function getConfig(platform, options) {
+export const getConfig = (platform, options = {}) => {
   const cfg = buildConfig(platform, options).getConfig()
-  console.log('Config', cfg)
-  cfg.cache = __cache
 
-    delete(cfg.options)
+  if (options.cache) {
+    cfg.cache = options.cache
+  }
+
+  delete(cfg.options)
+
   return cfg
 }
 
-export function buildConfig(platform, options = {}) {
+export const buildConfig = (platform, options = {}) => {
   switch (platform) {
     case 'server':
     case 'node':
@@ -44,11 +47,29 @@ export function buildConfig(platform, options = {}) {
   }
 }
 
-function enhance (compilerInstance, compilerHooks, compilationHooks) {
+export const enhance = (compilerInstance, compilerHooks, compilationHooks) => {
+
+  compilerInstance.start = (options = {}) => (
+    new Promise((resolve, reject) => {
+      compilerInstance.run((err, stats) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve({
+            stats,
+            report: new Report(stats, options)
+          })
+        }
+      })
+    })
+  )
+
+  // Attach hooks to webpack events
   if (compilerHooks) {
     mapValues(compilerHooks, (plugin, fn) => compiler.plugin(plugin, fn))
   }
 
+  // Attach hooks to webpack compilation specific events
   if (compilationHooks) {
     compiler.plugin('compilation', (compilation) => {
       mapValues(compilationHooks, (plugin, fn) => {
@@ -57,45 +78,5 @@ function enhance (compilerInstance, compilerHooks, compilationHooks) {
     })
   }
 
-  compilerInstance.start = (options = {}) => (
-    new Promise((resolve, reject) => {
-      compilerInstance.run((err, stats) => {
-        if (err) {
-          reject(err)
-        } else {
-          resolve(createResult(stats))
-        }
-      })
-    })
-  )
-
   return compilerInstance
-}
-
-function createResult(stats, options = {}) {
-  const json = stats.toJson(options)
-
-  return {
-    get hasErrors() {
-      return stats.hasErrors()
-    },
-    get hasWarnings() {
-      return stats.hasWarnings()
-    },
-    get json() {
-      return json
-    },
-    get timeInMs() {
-      return ((stats.endTime-stats.startTime)/ 1000).toFixed(2)
-    },
-    get hash() {
-      return stats.hash
-    },
-    getStats() {
-      return stats
-    },
-    get report() {
-      return stats.toString(options)
-    }
-  }
 }

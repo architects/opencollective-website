@@ -1,22 +1,16 @@
-const loaders = require('../loaders')
-const project = require('../..').project
+const project = require('..').project
+const isEmpty = require('lodash/isEmpty')
+const loaders = require('../webpack/loaders')
+const plugins = require('../webpack/plugins')
 const { EXPOSE_ENV } = require('./env')
 
-const entries = {
-  development: {
-    website: [
-      'webpack-hot-middleware/client',
-      project.paths.frontend.srcPath('index.web')
-    ]
-  },
-  production: {
-    website: [
-      project.paths.frontend.srcPath('index.web')
-    ]
-  }
-}
-
 export const builder = (options = {}) => {
+
+  if (isEmpty(options.entry)) {
+    project.cli.error(`Missing required option: ${'entry'.bold.red}`)
+    throw new Error('Invalid options passed to builder')
+  }
+
   const cfg = require('@terse/webpack').api()
 
     .entry(options.entry)
@@ -27,7 +21,7 @@ export const builder = (options = {}) => {
 
     .output({
       path: project.paths.frontend.output,
-      publicPath: project.paths.frontend.publicPath,
+      publicPath: '/static/',
       filename: '[name].js'
     })
 
@@ -111,14 +105,17 @@ export const builder = (options = {}) => {
   return cfg
 }
 
-const production = (options, builder, paths = project.paths.frontend) => (
-  builder
+const production = (options, builder, paths = project.paths.frontend) => {
+  const { loader } = plugins.helpers.styleExtractor({name:'[name].css'})
+
+  const prod = builder
     .loader('babel', '.js', loaders.scripts.babelLoader({
       include: [paths.src],
       exclude: [/node_modules/]
     }))
 
     .loader('extract-css', '.css', loaders.css.extractingLoader({
+      loader,
       include: [paths.src],
       exclude: [/node_modules/]
     }))
@@ -136,10 +133,12 @@ const production = (options, builder, paths = project.paths.frontend) => (
         }
       })
     })
-)
 
-const development = (options, builder, paths = project.paths.frontend) => (
-  builder
+    return prod
+}
+
+const development = (options, builder, paths = project.paths.frontend) => {
+  const dev = builder
     .plugin('webpack.HotModuleReplacementPlugin')
 
     .loader('babel', '.js', loaders.scripts.babelHotLoader({
@@ -160,7 +159,9 @@ const development = (options, builder, paths = project.paths.frontend) => (
       include: [paths.assets],
       loader: loaders.assets.imageLoader('development')
     })
-)
+
+  return dev
+}
 
 
 // This exports a function which is compatible with using webpacks CLI

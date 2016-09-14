@@ -8,44 +8,25 @@
  *
  * See: https://webpack.github.io/docs/library-and-externals.html
  */
-const loaders = require('../loaders')
-const project = require('../..').project
-const externals = require('../plugins/contrib').ExternalNodeModules
+const loaders = require('../webpack/loaders')
+const project = require('..').project
+const externals = require('../webpack/plugins/contrib').ExternalNodeModules
+const isEmpty = require('lodash/isEmpty')
 const { EXPOSE_ENV } = require('./env')
 
 const server = (...args) => project.paths.server.srcPath(...args)
 const frontend = (...args) => project.paths.frontend.srcPath(...args)
 
-const entries = {
-  development: {
-    server: [
-      // combines into one entry point
-      'webpack/hot/poll?1000',
-      server('index.js')
-    ],
-
-    // combines into one entry point
-    renderer: [
-      'webpack/hot/poll?1000',
-      server('global.js'),
-      frontend('index.node')
-    ]
-  },
-  production: {
-    server: [
-      server('index.js')
-    ],
-    renderer: [
-      server('global.js'),
-      frontend('index.node')
-    ]
-  }
-}
-
 export const builder = (options = {}) => {
+
+  if (isEmpty(options.entry)) {
+    project.cli.error(`Missing required option: ${'entry'.bold.red}`)
+    throw new Error('Invalid options passed to builder')
+  }
+
   const cfg = require('@terse/webpack').api()
 
-    .entry(options.entry || entries[project.env])
+    .entry(options.entry)
 
     // all relative paths will be relative to the context
     .context(project.get('paths.context', process.cwd()))

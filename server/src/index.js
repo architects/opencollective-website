@@ -1,4 +1,5 @@
 import config from 'config';
+import defaults from 'lodash/defaults'
 import express from 'express';
 import serverStatus from 'express-server-status';
 import morgan from 'morgan';
@@ -12,17 +13,19 @@ export const app = express()
  * Express app
  */
 
-export function setup(options = {}) {
+export function setup(options = require(process.cwd())) {
+  const { paths, version } = options
+
   /**
    * Locals for the templates
    */
-  app.locals.version = options.version
+  app.locals.version = version
   app.locals.SHOW_GA = (process.env.NODE_ENV === 'production');
-  app.locals.publicPath = options.paths.publicPath
+  app.locals.publicPath = paths.publicPath
 
-  app.set('publicPath', options.paths.publicPath)
-  app.set('staticRoot', options.paths.frontend.output)
-  app.set('renderersPath', options.paths.server.output)
+  app.set('publicPath', paths.server.publicPath)
+  app.set('staticRoot', paths.frontend.output)
+  app.set('renderersPath', paths.server.output)
 
   /**
    * In production we assume that we are serving assets from the staticRoot
@@ -31,7 +34,7 @@ export function setup(options = {}) {
    *
    * TODO: 404 Handling should be handled by the react-router on the client side altogether
    */
-  app.set('fallbackMethod', process.env.NODE_ENV === 'production' ? 'static' : 'dev')
+  app.set('fallbackMethod', options.fallbackMethod || process.env.NODE_ENV === 'production' ? 'static' : 'dev')
 
   app.set('trust proxy', 1) // trust first proxy for https cookies
 
@@ -63,7 +66,7 @@ export function setup(options = {}) {
    */
   app.use('/status', serverStatus(app));
 
-  routes(app)
+  routes(app, options)
 
   /**
    * Error handling
@@ -90,12 +93,16 @@ export function setup(options = {}) {
     });
   });
 
+  app.start = (options) => start(app, options)
+
   return app
 }
 
-export function start(app, options = {}) {
-  const port = options.port || process.env.PORT || process.env.WEBSITE_PORT
+function start(app, options = {}) {
+  const port = options.port || process.env.PORT || process.env.WEBSITE_PORT || 3000
   const hostname = options.host || process.env.HOST || '0.0.0.0'
+
+  console.log('Starting app', options)
 
   return new Promise((resolve, reject) => {
     app.listen(port, hostname, (err) => {
@@ -105,10 +112,5 @@ export function start(app, options = {}) {
 }
 
 app.setup = (options) => setup(options)
-
-app.start = (options) => setup(options).start({
-  port: options.port,
-  host: options.host
-})
 
 export default app

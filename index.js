@@ -9,7 +9,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
 const env = process.env
 
 const settings = get(pkg, 'opencollective', {
-  publicPath: '/static',
+  publicPath: '/static/',
   source: 'src',
   assets: 'src/assets',
   output: 'dist',

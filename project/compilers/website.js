@@ -1,5 +1,7 @@
 import { buildConfig, compiler } from '../webpack'
-import plugins from '../webpack/plugins'
+import postcss from '../config/postcss'
+import eslint from '../config/eslint'
+import plugins from '../webpack/plugins/core'
 
 export const info = {
   name: 'website',
@@ -11,13 +13,29 @@ export const create = (options = {}) => {
 
   const config = buildConfig('web', {
     entry: {
-      website: frontend.srcPath('index.web')
+      website: frontend.srcPath('index.web'),
+      widget: frontend.srcPath('css/widget.css')
     }
   })
+
+  .plugin('html-webpack-plugin', {
+    template: frontend.srcPath('templates/200.html'),
+    filename: '200.html',
+    chunks: ['website']
+  })
+
+  .getConfig()
+
+  // HACK
+  if (process.env.NODE_ENV === 'production') {
+    config.plugins.push( new plugins.ExtractTextPlugin('[name].css') )
+  }
 
   return compiler({
     name: options.name,
     ...config,
-    cache: options.cache
+    cache: options.cache,
+    postcss,
+    eslint
   })
 }
