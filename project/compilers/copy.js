@@ -11,7 +11,7 @@ export const create = (options = {}) => {
 
   const config = buildConfig('server', {
     entry: {
-      index: paths.join('copy/index')
+      copy: paths.join('copy/index')
     }
   })
 
@@ -19,7 +19,7 @@ export const create = (options = {}) => {
 
   .output({
     path: frontend.output,
-    filename: 'copy/index.js'
+    filename: '[name].js'
   })
 
   .loader('babel', '.js', {
