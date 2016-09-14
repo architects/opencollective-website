@@ -6,25 +6,45 @@ export const info = {
 }
 
 export const create = (options = {}) => {
-  const { frontend, server } = options.paths
+  const { frontend, server, copy } = options.paths
 
   const config = buildConfig('server', {
     entry: {
       website: [
-        // makes our i18n library available globally without ever having to require it
-        `expose?global.$i18n!${frontend.srcPath('lib/i18n.js')}`,
         frontend.srcPath('index.node')
       ],
 
       widget: [
-        `expose?global.$i18n!${frontend.srcPath('lib/i18n.js')}`,
         frontend.srcPath('components/Widget.js')
-      ],
-
-      i18n: [
-        `${frontend.srcPath('lib/i18n.js')}`
       ]
     }
+  })
+
+  /**
+   * This makes all of the server side renderer files think they are in a browser
+   */
+  .plugin("webpack.BannerPlugin", {
+    banner:`
+      var jsdom = require('jsdom').jsdom;
+
+      global.document = jsdom('');
+      global.window = document.defaultView;
+      Object.keys(document.defaultView).forEach((property) => {
+        if (typeof global[property] === 'undefined') {
+          global[property] = document.defaultView[property];
+        }
+      });
+
+      global.navigator = {
+        userAgent: 'node.js'
+      };
+    `,
+    raw: true,
+    entryOnly: true
+  })
+
+  .plugin('webpack.ProvidePlugin', {
+    $i18n: copy.srcPath('index.js')
   })
 
   .output({

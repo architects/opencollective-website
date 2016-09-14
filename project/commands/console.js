@@ -36,7 +36,7 @@ export function execute (options = {}, context = {}) {
 
     get store() {
       return require(
-        project.paths.server.join('dist/')
+        project.paths.join('server/dist/store')
       )
     },
 
@@ -49,12 +49,14 @@ export function execute (options = {}, context = {}) {
     },
 
     get renderer() {
-      return require('../../frontend/src/index.node')
+      const mod = require('../../server/dist/renderers/website')
+      return mod.middleware(mod.store)
     },
 
-    get dist() {
-
+    get copy() {
+      return require('../../frontend/dist/copy').default
     }
+
   }, (replServer) => {
     if (project.command.options.compiler) {
       const compiler = replServer.context.compiler = project.compiler(project.command.options.compiler)

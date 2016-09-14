@@ -1,3 +1,5 @@
+require('colors')
+
 const project = require('..').project
 
 /* eslint-disable */
@@ -17,14 +19,18 @@ Promise.all([
   results.forEach(result => {
     const { report, stats } = result
 
-    if (report.hasErrors) {
+    const outputPath = project.paths.relative(stats.compilation.compiler.outputPath)
+
+    if (stats.hasErrors() || stats.hasWarnings()) {
       project.cli.print('Failure:'.red, 4)
-      console.log(
-        stats.toString('errors-only')
+      project.cli.print('-------', 2)
+      project.cli.print(
+        stats.toString('errors-only').split("\n"), 6
       )
     } else {
-      project.cli.print('\n')
-      project.cli.print(`Results for ${stats.compilation.name}`.green.underline, 2)
+      project.cli.print('-------', 2)
+      project.cli.print(`Output: ${outputPath}`, 2)
+      project.cli.print('Chunks:', 2)
       stats.toString('minimal').split("\n").forEach(line => {
         project.cli.print(line, 6)
       })

@@ -7,47 +7,62 @@ export const info = {
 
 export const create = (options = {}) => {
   const { paths } = options
-  const { frontend, server } = paths
 
-  const config = buildConfig('server', {
-    entry: {
-      copy: paths.join('copy/index')
-    }
+  const main = config({
+    entry: { index: paths.copy.srcPath('index.js') },
+    mod: (b) => b.plugin('webpack.DefinePlugin', {__LOCALE__: 'en'}),
+    paths
+  })
+
+  const defaultLang = (lang) =>
+    config({
+      entry: paths.copy.srcPath('index.js'),
+      filename: `langs/${lang}.js`,
+      paths,
+      mod: (b) => b.plugin('webpack.DefinePlugin', {__LOCALE__: lang})
+    })
+
+  return compiler(
+    [main].concat(['en', 'fr', 'es', 'it'].map(lang => defaultLang(lang)))
+  )
+}
+
+export const config = (options = {}) => {
+  const { paths } = options
+
+  const builder = buildConfig('server', {
+    entry: options.entry
   })
 
   .sourcemap(false)
 
   .output({
-    path: frontend.output,
-    filename: '[name].js'
+    path: paths.copy.output,
+    filename: options.filename || '[name].js'
   })
 
   .loader('babel', '.js', {
-    include:[paths.join('copy')],
-    exclude:[/node_modules/]
-  })
-
-  .getConfig()
-
-  // Disable a needless warning
-  config.module = {
-    ...config.module,
-    exprContextRegExp: /$^/,
-    exprContextCritical: false
-  }
-
-  config.module.loaders.push({
-    loader: 'json!yaml',
-    test: /\.yml/,
-    include: [
-      paths.join('copy')
+    include:[paths.copy.src],
+    exclude:[
+      /node_modules/,
+      paths.copy.output
     ]
   })
 
-  config.plugins && config.plugins.push( ...(options.plugins || []) )
-
-  return compiler({
-    name: options.name || 'copy',
-    ...config
+  .loader('yaml', '.yml', {
+    include:[paths.copy.src],
+    loader: 'json!yaml',
+    exclude:[
+      /node_modules/,
+      paths.copy.output
+    ]
   })
+
+  // SEE https://github.com/moment/moment/issues/1435#issuecomment-232687733
+  // prevents loading all the locales
+  .plugin('webpack.IgnorePlugin', /^\.\/locale$/, /moment$/)
+
+  return options.mod
+    ? options.mod(builder, options).getConfig()
+    : builder.getConfig()
 }

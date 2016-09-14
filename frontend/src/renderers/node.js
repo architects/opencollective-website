@@ -7,9 +7,19 @@ import serialize from 'serialize-javascript';
 import qs from 'query-string';
 import hydrate from '../actions/session/hydrate'
 
-export const create = (store) => (req) => {
+const toUrl = (req) => {
+  if (typeof req === 'string') {
+    return req
+  }
+
   const query = qs.stringify(req.query);
   const url = req.path + (query.length ? `?${query}` : '');
+
+  return url
+}
+
+export const create = (store) => (req) => {
+  const url = toUrl(req)
 
   return new Promise((resolve, reject) => {
     store.dispatch(match(url, (error, redirectLocation, routerState) => {

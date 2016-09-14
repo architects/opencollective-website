@@ -5,6 +5,8 @@ const argv = mapKeys(omit(require('minimist')(process.argv),'_'), (v,k) => camel
 const pkg = require('..')
 const paths = pkg.paths
 
+process.env.NODE_CONFIG_DIR = `${__dirname}/config`
+
 process.env.NODE_ENV = argv.env || process.env.NODE_ENV || 'development'
 
 let app
@@ -12,9 +14,8 @@ let app
 if (process.env.NODE_ENV === 'development') {
   require('dotenv').load()
   require('babel-register')
-  process.env.NODE_CONFIG_DIR = paths.config
 
-  const setup = require(paths.server.join('src/index.js')).setup
+  const setup = require('./src').setup
 
   app = setup({
     paths,
@@ -23,7 +24,7 @@ if (process.env.NODE_ENV === 'development') {
   })
 
 } else {
-  const setup = require(paths.server.join('dist/index.js')).setup
+  const setup = require('./dist').setup
 
   app = setup({
     paths,

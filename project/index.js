@@ -1,13 +1,26 @@
-require('babel-register')
+require('babel-register')({
+  babelrc: false,
+  presets: [
+    "es2015",
+    "react",
+    "stage-0"
+  ],
+  plugins: [
+    "babel-plugin-add-module-exports",
+    "babel-plugin-lodash",
+    "babel-plugin-transform-export-extensions",
+    "babel-plugin-transform-async-to-generator",
+    "babel-plugin-transform-regenerator"
+  ]
+})
 
 const { name, version } = require('../package.json')
 const paths = require('..').paths
 const argv = require('minimist')(process.argv)
 const camelCase = require('lodash/camelCase')
 const mapKeys = require('lodash/mapKeys')
-const omit = require('lodash/omit')
-const omitBy = require('lodash/omitBy')
 const result = require('lodash/result')
+const omit = require('lodash/omit')
 const get = require('lodash/get')
 
 const project = {
@@ -69,14 +82,17 @@ const project = {
           project.paths.server.output
         )
         .filter(f => f.match(/\.js$/))
-        .map(f => [f, project.paths.server.relative(`../dist/${f}`)])
+        .map(f => f.replace(/\.js/,''))
+        .map(f => ({get [f]() {
+          return require(project.paths.join(`server/dist/${f}`))
+        }})).reduce(Object.assign.bind({},{}), {})
       },
       get client() {
         return project.fsx.readdirSync(
           project.paths.server.output
         )
         .filter(f => f.match(/\.js$/))
-        .map(f => [f, project.paths.server.relative(`../dist/${f}`)])
+        .map(f => [f, project.paths.frontend.join(`dist/${f}`)])
       }
     }
   },

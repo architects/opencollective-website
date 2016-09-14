@@ -4,7 +4,7 @@ import { join } from 'path'
 export function websiteViews(options = {}) {
   const { knownHelpers } = require(
     join(process.cwd(), 'server', 'src', 'views')
-  ) 
+  )
 
   defaults(options, {
     helperDirs: [
@@ -17,12 +17,12 @@ export function websiteViews(options = {}) {
   })
 
   return {
-    test: /\.(hbs|handlebars)$/,
+    test: /\.(hbs|handlebars|svg)$/,
     loader: 'handlebars',
     query: {
       helperDirs: options.helperDirs,
       partialDirs: options.partialDirs,
-      knownHelpers: options.knownHelpers
+      knownHelpers: options.knownHelpers.concat('cachebust')
     }
   }
 }

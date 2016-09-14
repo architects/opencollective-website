@@ -9,7 +9,7 @@ export const info = {
 }
 
 export const create = (options = {}) => {
-  const { frontend } = options.paths
+  const { frontend, copy } = options.paths
 
   const config = buildConfig('web', {
     entry: {
@@ -17,12 +17,14 @@ export const create = (options = {}) => {
       widget: frontend.srcPath('css/widget.css'),
 
       // build the dom renderer for the website with $i18n available globally
-      website: [
-        `expose?window.$i18n!${frontend.srcPath('lib/i18n')}`,
-        frontend.srcPath('index.web')
-      ]
+      website: frontend.srcPath('index.web')
     }
   } )
+
+  // Inject the $i18n object as a free module
+  .plugin('webpack.ProvidePlugin', {
+    $i18n: copy.srcPath('index.js')
+  })
 
   .plugin('html-webpack-plugin', {
     template: frontend.srcPath('templates/200.html'),

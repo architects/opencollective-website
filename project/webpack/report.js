@@ -12,8 +12,6 @@ export class Report {
     this.stats = stats
     this.json = stats.toJson(options)
 
-    this.name = stats.compilation.name
-
     this.endTime = stats.endTime
     this.startTime = stats.startTime
     this.hash = stats.hash

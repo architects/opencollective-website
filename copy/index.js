@@ -1,11 +1,10 @@
-import moment from 'moment'
-import 'moment/locale/es'
-import 'moment/locale/fr'
-import lodash from 'lodash'
+import get from 'lodash/get'
+import set from 'lodash/set'
 import currency from './currency'
+import inflect from './inflect' // eslint-disable-line
+import moment from './moment-locales'
 
-moment.locale('en');
-
+// The require context is a webpack only feature which can require an entire folder
 export const req = require.context('.', true, /.yml$/)
 
 const sanitize = (key) => key.replace('./', '').replace(/\.yml$/, '')
@@ -20,7 +19,7 @@ export const data = () => {
 
   req.keys().forEach(key => {
     const path = sanitize(key).replace(/\//g, '.')
-    lodash.set(result, path, req(key))
+    set(result, path, req(key))
   })
 
   return result
@@ -41,21 +40,53 @@ export const lang = (lang) => {
 
   const content = data()
 
-  return {
-    get allStrings() {
-      return lodash.get(content.locales, lang)
+  const helpers = {
+    // an alias to getString
+    t (...args) {
+      return helpers.getString(...args)
     },
-    getString(id) {
-      return lodash.get(
-        content.locales,
-        [lang, id],
-        // fallback to en
-        lodash.get(content.locales, ['en', id])
+
+    // request multiple values and get an object with keys matching the desired value
+    strings (...keys) {
+      return keys.reduce(
+        (memo, id) => Object.assign(memo, {[id]: helpers.t(id)}),
+        {}
       )
     },
+
+    getString (id, fallbackValue) {
+      return get(
+        content.locales,
+        [lang, id],
+        // fallback to en unless a fallback is specified
+        typeof fallbackValue === 'string'
+          ? fallbackValue
+          : get(content.locales, ['en', id])
+      )
+    },
+
+    get allStrings() {
+      return get(content.locales, lang)
+    },
+
+    setLocale(lang) {
+      return lang(lang)
+    },
+
+    // raw access to the moment library
     moment,
+
+    // format currency
     currency
+
+  }
+
+  return {
+    // add the inflect helpers
+    ...inflect,
+    ...helpers
   }
 }
 
-export default lang(global.__LOCALE__ || process.env.DEFAULT_LOCALE || 'en')
+// TODO: we can export this with different default locales
+export default lang(__LOCALE__)

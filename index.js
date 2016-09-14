@@ -15,11 +15,13 @@ const settings = get(pkg, 'opencollective', {
   output: 'dist',
   client: 'frontend',
   server: 'server',
-  tools: 'project'
+  tools: 'project',
+  copy: 'copy'
 })
 
 const PROJECT_ROOT = join(__dirname)
 const FRONTEND_ROOT = env.FRONTEND_ROOT || resolve(PROJECT_ROOT, settings.client)
+const COPY_ROOT = env.COPY_ROOT || resolve(PROJECT_ROOT, settings.copy)
 const SERVER_ROOT = env.SERVER_ROOT || resolve(PROJECT_ROOT, settings.server)
 
 // Provides a cleaner way of referring to locations within the project
@@ -33,6 +35,17 @@ const paths = {
   config: env.NODE_CONFIG_DIR || join(SERVER_ROOT, 'config'),
 
   node_modules: join(PROJECT_ROOT, 'node_modules'),
+
+  copy: {
+    src: COPY_ROOT,
+
+    // where the production javascript will be found
+    output: join(COPY_ROOT, settings.output),
+
+    distPath: (...args) => `./${relative(PROJECT_ROOT, join(paths.copy.output, ...args))}`,
+
+    srcPath: (...args) => `./${relative(PROJECT_ROOT, join(paths.copy.src, ...args))}`
+  },
 
   frontend: {
     // where our main code lives
@@ -48,8 +61,11 @@ const paths = {
 
     join: (...args) => join(FRONTEND_ROOT, ...args),
 
-    srcPath: (...args) => `./${relative(PROJECT_ROOT, join(paths.frontend.src, ...args))}`
+    srcPath: (...args) => `./${relative(PROJECT_ROOT, join(paths.frontend.src, ...args))}`,
+
+    distPath: (...args) => `./${relative(PROJECT_ROOT, join(paths.frontend.output, ...args))}`
   },
+
 
   server: {
     src: join(SERVER_ROOT, settings.source),
@@ -71,6 +87,7 @@ const paths = {
    */
   join: (...args) => join(paths.cwd, ...args),
   resolve: (...args) => resolve(paths.cwd, ...args),
+  relative: (...args) => relative(paths.cwd, ...args),
 
   get: (...args) => get(paths, ...args)
 }
@@ -80,5 +97,21 @@ module.exports = {
   version: pkg.version,
   package: pkg,
   paths: paths,
-  settings: settings
+  settings: settings,
+
+  get sourcePaths() {
+    return {
+      copy: get(paths, 'copy.src'),
+      frontend: get(paths, 'frontend.src'),
+      server: get(paths, 'server.src')
+    }
+  },
+
+  get distPaths() {
+    return {
+      copy: get(paths, 'copy.output'),
+      frontend: get(paths, 'frontend.output'),
+      server: get(paths, 'server.output')
+    }
+  }
 }

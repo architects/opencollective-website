@@ -37,8 +37,7 @@ build/Release
 node_modules
 
 # Build
-server/dist/
-frontend/dist/
+*/dist/
 
 # test artifacts
 output/

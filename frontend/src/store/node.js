@@ -10,6 +10,8 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 export function create(routes) {
+  routes = routes || require('../routes').default
+
   const store = compose(
     reduxReactRouter({ routes, createHistory: createMemoryHistory }),
     applyMiddleware(...reduxMiddleware)
