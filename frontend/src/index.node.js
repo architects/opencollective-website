@@ -9,3 +9,9 @@ export function middleware (store, routes = Routes) {
   store = store || createStore(routes)
   return ssr(store)
 }
+
+export const store = createStore(Routes)
+
+export const getRoutes = () => {
+  return Routes
+}

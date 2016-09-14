@@ -37,7 +37,9 @@ const project = {
     return {
       project,
       env: process.env.NODE_ENV,
-      command: project.command
+      command: project.command,
+      lodash: require('lodash'),
+      cli: project.cli
     }
   },
 

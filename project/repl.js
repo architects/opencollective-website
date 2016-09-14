@@ -16,7 +16,13 @@ function start (options = {}, context = {}, ready = function() {}) {
   const server = require('repl').start(options)
 
   Object.keys(context).forEach(key => {
-    server.context[key] = context[key]
+    Object.defineProperty(server.context, key, {
+      configurable: true,
+      enumerable: true,
+      get: function() {
+        return context[key]
+      }
+    })
   })
 
   try {
@@ -27,7 +33,7 @@ function start (options = {}, context = {}, ready = function() {}) {
   }
 
   ready && ready(server)
-  
+
   return server
 }
 

@@ -85,23 +85,6 @@ export const builder = (options = {}) => {
       fetch: 'exports?window.fetch!whatwg-fetch'
     })
 
-    /**
-     * FIX PROBLEM MODULES
-     *
-     * joi has a separate browser build, we substitute require('joi') with that
-     */
-    .alias('joi', 'joi-browser')
-
-    // Fix a problem with numbro
-    .loader('numbro', '.js', {
-      test: /numbro\/numbro/,
-      loader: 'imports?require=>false'
-    })
-
-    // SEE https://github.com/moment/moment/issues/1435#issuecomment-232687733
-    // prevents loading all the locales
-    .plugin('webpack.IgnorePlugin', /^\.\/locale$/, /moment$/)
-
   return cfg
 }
 

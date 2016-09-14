@@ -57,7 +57,9 @@ export const enhance = (compilerInstance, compilerHooks, compilationHooks) => {
         } else {
           resolve({
             stats,
-            report: new Report(stats, options)
+            report: new Report(stats, options),
+            config: compilerInstance.options,
+            outputPath: compilerInstance.outputPath
           })
         }
       })
