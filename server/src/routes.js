@@ -7,10 +7,10 @@ import request from 'request';
 import robots from 'robots.txt';
 import * as controllers from './controllers';
 import apiUrl from './utils/api_url';
-import render from './lib/render';
+import render from './lib/render'
+
 
 export default (app) => {
-
   /**
    * Redirects
    */

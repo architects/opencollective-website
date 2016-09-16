@@ -1,0 +1,28 @@
+{
+  "name": "opencollective-website-copy",
+  "private": "true",
+  "version": "0.1.172",
+  "engines": {
+    "node": "6.2.2",
+    "npm": "3.9.5"
+  },
+  "scripts": {
+    "test": "oc-devtool",
+    "build": "oc-devtool build universal",
+    "release": "exit 0"
+  },
+  "main": "dist/index.js",
+  "browser": "dist/index.web.js",
+  "dependencies": {
+    "lodash": "4.15.0",
+    "moment": "^2.15.0",
+    "numbro": "^1.9.3"
+  },
+  "License": "MIT",
+  "opencollective": {
+    "paths": {
+      "source": "src",
+      "output": "dist"
+    }
+  }
+}

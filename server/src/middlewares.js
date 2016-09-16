@@ -2,7 +2,7 @@ import config from 'config';
 import api from './lib/api';
 import expressSession from 'express-session';
 import ua from 'universal-analytics';
-import filterCollection from '../../frontend/src/lib/filter_collection';
+import filterCollection from './lib/filter_collection';
 
 /**
  * Fetch users by slug
@@ -118,7 +118,7 @@ const addMeta = (req, res, next) => {
       title: `${group.name} is on Open Collective`,
       description: `${group.name} is on a mission to ${group.mission}`,
       image: group.image || group.logo,
-      twitter: `@${group.twitterHandle}`,
+      twitter: `@${group.twitterHandle}`
     };
   } else {
     const user = req.group;

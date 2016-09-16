@@ -1,5 +1,5 @@
-web: npm run watch:server
-js: npm run watch:js
-css: gulp watch:css
-assets: gulp watch:assets
+hot: webpack-dev-server --hot --inline --content-base ./frontend/dist
+assets: webpack --target web --config frontend/webpack.config.babel.js
+universal: webpack --watch --target node --config frontend/webpack.config.babel.js
+server: babel -w -d server/dist server/src
 svg: gulp watch:svg

@@ -1,6 +1,5 @@
 import fetch from 'isomorphic-fetch';
 import { EventEmitter } from 'events';
-import { checkStatus } from '../../../frontend/src/lib/api';
 import apiUrl from '../utils/api_url';
 
 /**
@@ -55,3 +54,19 @@ api.post = (endpoint, body) => {
 };
 
 export default api;
+
+export function checkStatus(response) {
+  const { status } = response;
+
+  if (status >= 200 && status < 300) {
+    return response.json();
+  } else {
+    return response.json()
+    .then((json) => {
+      const error = new Error(json.error.message);
+      error.json = json;
+      error.response = response;
+      throw error;
+    });
+  }
+}

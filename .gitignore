@@ -39,6 +39,10 @@ node_modules
 # Build
 server/dist/
 frontend/dist/
+*/dist/
+*/node_modules/
+dist/
+stats/*.json
 
 # test artifacts
 output/
